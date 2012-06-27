@@ -1,18 +1,17 @@
 <?php
-class MailchimpSubscriber extends AppModel
-{
-	var $useDbConfig = 'mailchimp';
-    var $name = 'MailchimpSubscriber ';
-	var $useTable = false;
+class MailchimpSubscriber extends AppModel {
+	public $useDbConfig = 'mailchimp';
+    public $name = 'MailchimpSubscriber';
+	public $useTable = false;
 
-	// $validate is really defined in the __construct constructor because of i18n issues
-	var $validate = array();
+	// $validate is really defined in the __construct constructor because of
+	// i18n issues
+	public $validate = array();
 
 	/**
-	 * Use $_schema to set any mailchimp fields that you want to use
-	 * @var <type>
+	 * The basic Mailchimp schema
 	 */
-	public $_schema = array(
+  	public $_schema = array(
 		'id' => array(
 			'type' => 'int',
 			'null' => true,
@@ -43,19 +42,20 @@ class MailchimpSubscriber extends AppModel
 	);
 
 	/**
-	 * Override del method from model.php class, because it would block deleting when useTable = false and no records exists
+	 * Override Model::delete, because it would block deleting when
+	 * useTable = false and no records exists
+	 *
 	 * @param <type> $id
 	 * @param <type> $cascade
 	 * @return <type>
 	 */
-	function del($id = null, $cascade = true) {
-
+	function delete($id = null, $cascade = true) {
 		if (!empty($id)) {
 			$this->id = $id;
 		}
 		$id = $this->id;
 
-		if ( $this->beforeDelete($cascade)) {
+		if ($this->beforeDelete($cascade)) {
 			$db =& ConnectionManager::getDataSource($this->useDbConfig);
 			if (!$this->Behaviors->trigger($this, 'beforeDelete', array($cascade), array('break' => true, 'breakOn' => false))) {
 				return false;
