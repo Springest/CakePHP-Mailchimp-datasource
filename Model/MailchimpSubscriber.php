@@ -1,7 +1,7 @@
 <?php
 class MailchimpSubscriber extends AppModel {
 	public $useDbConfig = 'mailchimp';
-    public $name = 'MailchimpSubscriber';
+	public $name = 'MailchimpSubscriber';
 	public $useTable = false;
 
 	// $validate is really defined in the __construct constructor because of
@@ -11,7 +11,7 @@ class MailchimpSubscriber extends AppModel {
 	/**
 	 * The basic Mailchimp schema
 	 */
-  	public $_schema = array(
+	public $_schema = array(
 		'id' => array(
 			'type' => 'int',
 			'null' => true,
@@ -84,11 +84,11 @@ class MailchimpSubscriber extends AppModel {
 	}
 
 	function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
-        $this->validate = array(
+		parent::__construct($id, $table, $ds);
+		$this->validate = array(
 			'emailaddress' => array(
-		        'rule' => array('email'),
-		        'message' => __("Please enter a valid e-mail address", true)
+				'rule' => array('email'),
+				'message' => __("Please enter a valid e-mail address", true)
 			)
 		);
 	}

@@ -63,8 +63,8 @@ class MailchimpSubscriberSource extends DataSource {
 	 * describe()
 	 *
 	 * Required by CakePHP
-  	 *
-  	 * describe() tells the model your schema for Model::save()
+	 *
+	 * describe() tells the model your schema for Model::save()
 	 *
 	 * @param <Model> $model
 	 * @return <Array>
@@ -85,11 +85,11 @@ class MailchimpSubscriberSource extends DataSource {
 		$response = json_decode($this->connection->get($url), true);
 
 		if (is_null($response)) {
-      		$error = json_last_error();
-      		throw new CakeException($error);
-    	}
+			$error = json_last_error();
+			throw new CakeException($error);
+		}
 
-    	return array($Model->alias => $res);
+		return array($Model->alias => $res);
 	}
 
 	/**
@@ -110,9 +110,9 @@ class MailchimpSubscriberSource extends DataSource {
 		$response = json_decode($this->connection->get($url), true);
 
 		if (is_null($response)) {
-        	$error = json_last_error();
-        	throw new CakeException($error);
-    	}
+			$error = json_last_error();
+			throw new CakeException($error);
+		}
 
 		return true;
 	}
@@ -126,8 +126,8 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @return boolean
 	 */
 	public function update(Model $Model, $fields = array(), $values = array()) {
-    	return $this->create($Model, $fields, $values);
-  	}
+		return $this->create($Model, $fields, $values);
+	}
 
 	/**
 	 * Delete a subscriber from the list
@@ -144,24 +144,24 @@ class MailchimpSubscriberSource extends DataSource {
 		$response = json_decode($this->connection->get($url), true);
 
 		if (is_null($response)) {
-      		$error = json_last_error();
-      		throw new CakeException($error);
-    	}
+			$error = json_last_error();
+			throw new CakeException($error);
+		}
 
-    	return true;
+		return true;
 	}
 
-	 /**
-	  * Build the URL that is used for sending a request
-	  *
-	  * @param string $method the method of the mailchimp API that will be used. For a full listing of methods, see http://www.mailchimp.com/api/rtfm/
-	  * @param string $emailAddress an email-address or id that will be added/deleted or retrieved
-	  * @param array $data an array of key value-pairs that will be used as merge_vars (the custom fields created in mailchimp)
-	  * @param string $apiKey the key that will be used for authentication against Mailchimps' API
-	  * @param string $listId the id of the list that the request will be run against; set in database.php
-	  * @param string $output the type of response that will be outputted; this datasource works with json only
-	  * @return string $url	the url that will be used to do request to Mailchimp
-	  */
+	/**
+	 * Build the URL that is used for sending a request
+	 *
+	 * @param string $method the method of the mailchimp API that will be used. For a full listing of methods, see http://www.mailchimp.com/api/rtfm/
+	 * @param string $emailAddress an email-address or id that will be added/deleted or retrieved
+	 * @param array $data an array of key value-pairs that will be used as merge_vars (the custom fields created in mailchimp)
+	 * @param string $apiKey the key that will be used for authentication against Mailchimps' API
+	 * @param string $listId the id of the list that the request will be run against; set in database.php
+	 * @param string $output the type of response that will be outputted; this datasource works with json only
+	 * @return string $url	the url that will be used to do request to Mailchimp
+	 */
 	private function buildUrl($method, $emailaddress, $data = array(), $apikey = null, $listId = null, $output = "json") {
 		if(empty($apikey)) { $apikey = $this->config['apikey'] }
 		if(empty($listId)) { $listId = $this->config['listId'] }
