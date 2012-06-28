@@ -70,7 +70,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @return <Array>
 	 */
 	public function describe(Model $Model) {
-		return $this->_schema;
+		return $Model->_schema;
 	}
 
 	/**
