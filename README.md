@@ -1,41 +1,42 @@
-# Cakephp Datasource for Mailchimp
+# Cakephp Plugin for Mailchimp
 
-With this datasource you can easily add users to your Mailchimp newsletter. It works in both CakePHP 1.2+ and CakePHP 2.0+, but be sure to check out the right branch. The `master` branch is the active branch which supports CakePHP 2.0 onwards. For older CakePHP versions, please check out the `cake-1.3` branch (despite the name it should work with CakePHP 1.2 too).
+With this datasource you can easily add users to your Mailchimp newsletter. It works with CakePHP 2.0+.
 
 Please check [the original blogpost][1] on our devblog for more background information.
 
+
 ## Setup
-### CakePHP 1.2+
-Add the model and datasource in their appropriate folders. 
 
-* `APP_DIR/models/`
-* `APP_DIR/models/datasources/`
+Copy the plugin into the `APP/Plugin` folder and make sure it is loaded using `CakePlugin::loadAll()`, for example.
 
-Add the `$mailchimp` datasource to `APP_DIR/config/database.php`
-
-    var $mailchimp = array(
-        'datasource' => 'mailchimp_subscriber',
-        'apiKey' => 'YOUR_API_KEY',
-        'defaultListId' => 'YOUR_LIST_ID',
-        'baseUrl' => 'http://us1.api.mailchimp.com/1.2/' // or another one, depending on the API version you use
-    );
-    
-### CakePHP 2.0+
-Add the model and datasource in their appropriate folders. 
-
-* `APP_DIR/Model/`
-* `APP_DIR/Model/Datasource/`
-
-Add the `$mailchimp` datasource to `APP_DIR/config/database.php`
+Add the `$mailchimp` datasource to `APP_DIR/Config/database.php`
 
 	public $mailchimp = array(
-		'datasource' => 'MailchimpSubscriberSource',
+		'datasource' => 'Mailchimp.MailchimpSubscriberSource',
 		'apikey' => 'YOUR_API_KEY',
 		'listId' => 'YOUR_LIST_ID',
 		'baseUrl' => 'http://us1.api.mailchimp.com/1.2/' // or another one, depending on the API version you use
 	);
 
+
 ## Usage
-When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->data)`, or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
+
+Include the Model where you need it via
+
+    $this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
+
+When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`, or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
 
 [1]: http://devblog.springest.com/mailchimp-datasource-cakephp
+
+
+## Dependencies
+
+Possibly my Tools plugin for the admin backend (optional)
+
+
+## Disclaimer
+
+MIT Licence
+
+Modified 2012 Mark Scherer: added tests + some basic admin backend and made it a plugin

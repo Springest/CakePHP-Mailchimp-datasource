@@ -1,15 +1,23 @@
 <?php
-class MailchimpSubscriber extends AppModel {
+App::uses('MailchimpAppModel', 'Mailchimp.Model');
+
+class MailchimpSubscriber extends MailchimpAppModel {
 	public $useDbConfig = 'mailchimp';
-	public $name = 'MailchimpSubscriber';
 	public $useTable = false;
 
-	// $validate is really defined in the __construct constructor because of
-	// i18n issues
-	public $validate = array();
+	// $validate is really defined in the __construct constructor because of i18n issues
+	public $validate = array(
+		'email' => array(
+			'email' => array(
+				'rule' => array('email'),
+				'message' => 'Please enter a valid e-mail address'
+			)
+		)
+	);
 
 	/**
-	 * The basic Mailchimp schema
+	 * Use $_schema to set any mailchimp fields that you want to use
+	 * @var <type>
 	 */
 	public $_schema = array(
 		'id' => array(
@@ -18,45 +26,70 @@ class MailchimpSubscriber extends AppModel {
 			'key' => 'primary',
 			'length' => 11,
 		),
-		'emailaddress' => array(
+		'email' => array(
 			'type' => 'string',
 			'null' => false,
 			'length' => 256
 		),
-		'FNAME' => array(
+		'fname' => array(
 			'type' => 'string',
 			'null' => true,
 			'key' => 'primary',
 			'length' => 128
 		),
-		'LNAME' => array(
+		'lname' => array(
 			'type' => 'string',
 			'null' => true,
 			'length' => 128
 		),
-		'GENDER' => array(
+		'gender' => array(
 			'type' => 'string',
 			'null' => true,
 			'length' => 32
 		),
 	);
 
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+
+		$config = am((array) Configure::read('Mailchimp'), array());
+		$this->settings = $config;
+
+		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
+		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));		
+	}
+	
 	/**
-	 * Override Model::delete, because it would block deleting when
-	 * useTable = false and no records exists
-	 *
+	 * @return boolean
+	 */
+	public function subscribe($queryData = array()) {
+		$response = $this->Mailchimp->listSubscribe($this->settings['defaultListId'], $queryData['email']);
+		return $response;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function unsubscribe($queryData = array()) {
+		$response = $this->Mailchimp->listUnsubscribe($this->settings['defaultListId'], $queryData['email']);
+		return $response;
+	}
+
+	/**
+	 * Override del method from model.php class, because it would block deleting when useTable = false and no records exists
 	 * @param <type> $id
 	 * @param <type> $cascade
 	 * @return <type>
 	 */
-	function delete($id = null, $cascade = true) {
+	/*
+	public function delete($id = null, $cascade = true) {
 		if (!empty($id)) {
 			$this->id = $id;
 		}
 		$id = $this->id;
 
 		if ($this->beforeDelete($cascade)) {
-			$db =& ConnectionManager::getDataSource($this->useDbConfig);
+			$db = ConnectionManager::getDataSource($this->useDbConfig);
 			if (!$this->Behaviors->trigger($this, 'beforeDelete', array($cascade), array('break' => true, 'breakOn' => false))) {
 				return false;
 			}
@@ -82,15 +115,6 @@ class MailchimpSubscriber extends AppModel {
 		}
 		return false;
 	}
+	*/
 
-	function __construct($id = false, $table = null, $ds = null) {
-		parent::__construct($id, $table, $ds);
-		$this->validate = array(
-			'emailaddress' => array(
-				'rule' => array('email'),
-				'message' => __("Please enter a valid e-mail address", true)
-			)
-		);
-	}
 }
-?>
