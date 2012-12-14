@@ -2,10 +2,11 @@
 App::uses('MailchimpAppModel', 'Mailchimp.Model');
 
 class MailchimpSubscriber extends MailchimpAppModel {
+
 	public $useDbConfig = 'mailchimp';
+
 	public $useTable = false;
 
-	// $validate is really defined in the __construct constructor because of i18n issues
 	public $validate = array(
 		'email' => array(
 			'email' => array(
@@ -19,7 +20,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * Use $_schema to set any mailchimp fields that you want to use
 	 * @var <type>
 	 */
-	public $_schema = array(
+	protected $_schema = array(
 		'id' => array(
 			'type' => 'int',
 			'null' => true,
@@ -52,13 +53,13 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 
-		$config = am((array) Configure::read('Mailchimp'), array());
+		$config = array_merge((array)Configure::read('Mailchimp'), array());
 		$this->settings = $config;
 
 		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
-		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));		
+		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
