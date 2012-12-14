@@ -9,7 +9,7 @@ Please check [the original blogpost][1] on our devblog for more background infor
 
 Copy the plugin into the `APP/Plugin` folder and make sure it is loaded using `CakePlugin::loadAll()`, for example.
 
-Add the `$mailchimp` datasource to `APP_DIR/Config/database.php`
+Add the `$mailchimp` datasource to `APP/Config/database.php`
 
 	public $mailchimp = array(
 		'datasource' => 'Mailchimp.MailchimpSubscriberSource',
