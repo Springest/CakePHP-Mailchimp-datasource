@@ -18,6 +18,12 @@ Add the `$mailchimp` datasource to `APP/Config/database.php`
 		'baseUrl' => 'http://us1.api.mailchimp.com/1.2/' // or another one, depending on the API version you use
 	);
 
+For BC you can also use the Configure class to set the API data:
+
+	$config['Mailchimp'] = array(
+		'apiKey' => 'YOUR_API_KEY',
+		'defaultListId' => 'YOUR_LIST_ID',
+	);
 
 ## Usage
 
