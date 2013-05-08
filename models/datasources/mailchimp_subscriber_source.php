@@ -86,11 +86,11 @@ class MailchimpSubscriberSource extends DataSource {
 
 		$response = json_decode($this->connection->get($url), true);
 
-		if(isset($response['error'])) {
+		if(isset($response['error']) && $response['errors'] > 0) {
 			return false;
 		}
 
-		return $response;
+		return $response['data'];
 	}
 
 	/**
