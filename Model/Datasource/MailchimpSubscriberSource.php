@@ -163,8 +163,8 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @return string $url	the url that will be used to do request to Mailchimp
 	 */
 	private function buildUrl($method, $emailaddress, $data = array(), $apikey = null, $listId = null, $output = "json") {
-		if(empty($apikey)) { $apikey = $this->config['apikey'] }
-		if(empty($listId)) { $listId = $this->config['listId'] }
+		if(empty($apikey)) { $apikey = $this->config['apikey']; }
+		if(empty($listId)) { $listId = $this->config['listId']; }
 
 		$url  = $this->config['baseUrl'];
 		$url .= "?method=".$method;
