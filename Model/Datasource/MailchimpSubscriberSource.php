@@ -89,7 +89,7 @@ class MailchimpSubscriberSource extends DataSource {
 			throw new CakeException($error);
 		}
 
-		return array($Model->alias => $res);
+		return array($Model->alias => $response);
 	}
 
 	/**
