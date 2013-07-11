@@ -1,13 +1,15 @@
 <?php
 
 App::uses('MailchimpAppModel', 'Mailchimp.Model');
-App::uses('MyCakeTestCase', 'Tools.Lib');
+App::uses('MyCakeTestCase', 'Tools.TestSuite');
 
 class MailchimpAppModelTest extends MyCakeTestCase {
 
 	public $MailchimpAppModel;
 
-	public function startTest() {
+	public function setUp() {
+		parent::setUp();
+
 		$this->MailchimpAppModel = new MailchimpAppModel();
 	}
 
@@ -16,5 +18,4 @@ class MailchimpAppModelTest extends MyCakeTestCase {
 		$this->assertIsA($this->MailchimpAppModel, 'MailchimpAppModel');
 	}
 
-	//TODO
 }

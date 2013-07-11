@@ -1,13 +1,14 @@
 <?php
 
 App::uses('MailchimpSubscriber', 'Mailchimp.Model');
-App::uses('MyCakeTestCase', 'Tools.Lib');
+App::uses('MyCakeTestCase', 'Tools.TestSuite');
 
 class MailchimpSubscriberTest extends MyCakeTestCase {
 
 	public $MailchimpSubscriber;
 
-	public function startTest() {
+	public function setUp() {
+		parent::setUp();
 		$this->MailchimpSubscriber = new MailchimpSubscriber();
 	}
 
@@ -18,12 +19,12 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 
 	public function testBasicSubscription() {
 		$res = $this->MailchimpSubscriber->subscribe(array('email'=>'kontakt@markscherer.de'));
-		die(returns($res));
+		$this->debug($res);
 	}
-	
+
 	public function testBasicUnsubscription() {
 		$res = $this->MailchimpSubscriber->unsubscribe(array('email'=>'kontakt@markscherer.de'));
-		die(returns($res));
+		$this->debug($res);
 	}
-	
+
 }

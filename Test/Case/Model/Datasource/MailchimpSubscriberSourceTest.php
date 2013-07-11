@@ -1,7 +1,7 @@
 <?php
 
 App::uses('MailchimpSubscriberSource', 'Mailchimp.Model/Datasource');
-App::uses('MyCakeTestCase', 'Tools.Lib');
+App::uses('MyCakeTestCase', 'Tools.TestSuite');
 
 class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 
@@ -9,16 +9,16 @@ class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 
 	public $fixtures = array('plugin.Mailchimp.NewsletterSubscriber');
 
-	public function startTest() {
-		$c = array(
+	public function setUp() {
+		parent::setUp();
+
+		$defaults = array(
 			'apiKey' => '',
 			'defaultListId' => '',
 			'baseUrl' => ''
 		);
-		$res = (array) Configure::read('Mailchimp');
-		$c = am($c, $res);
-		
-		$this->MailchimpSubscriberSource = new MailchimpSubscriberSource($c);
+		$configs = (array)Configure::read('Mailchimp') + $defaults;
+		$this->MailchimpSubscriberSource = new MailchimpSubscriberSource($configs);
 	}
 
 	public function testObject() {
@@ -29,21 +29,21 @@ class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 	public function testRead() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
 		$res = $this->MailchimpSubscriberSource->read($Model, array('conditions'=>array('email'=>'markscherer@gmx.de')));
-		
-		//die(returns($res));
-		return $res;
+		$this->debug($res);
 	}
 
-	public function testBasicSubscription() {
+	public function _testCreate() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
-		$res = $this->MailchimpSubscriberSource->subscribe($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
+		$res = $this->MailchimpSubscriberSource->create($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
 		//$this->assertTrue($res);
+		$this->debug($res);
 	}
-	
-	public function testBasicUnsubscription() {
+
+	public function _testDelete() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
-		$res = $this->MailchimpSubscriberSource->unsubscribe($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
+		$res = $this->MailchimpSubscriberSource->delete($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
 		//$this->assertTrue($res);
+		$this->debug($res);
 	}
-	
+
 }
