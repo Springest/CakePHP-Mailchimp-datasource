@@ -18,9 +18,9 @@ class MailchimpExport extends MailchimpAppModel {
 	 * Exports/dumps members of a list and all of their associated details.
 	 *
 	 * Optional params:
-	 * `status` – The status to get members for - one of (subscribed, unsubscribed, cleaned), defaults to subscribed
+	 * `status` - The status to get members for - one of (subscribed, unsubscribed, cleaned), defaults to subscribed
 	 * `segment` - Pull only a certain Segment of your list
-	 * `since` - Only return member whose data has changed since a GMT timestamp – in YYYY-MM-DD HH:mm:ss format
+	 * `since` - Only return member whose data has changed since a GMT timestamp - in YYYY-MM-DD HH:mm:ss format
 	 *
 	 * @param array $params
 	 * @return array Result
@@ -33,8 +33,8 @@ class MailchimpExport extends MailchimpAppModel {
 	 * Exports/dumps all Subscriber Activity for the requested campaign.
 	 *
 	 * Optional params:
-	 * `include_empty` – If set to "true" a record for every email address sent to will be returned even if there is no activity data. defaults to "false"
-	 * `since` - Only return activity recorded since a GMT timestamp – in YYYY-MM-DD HH:mm:ss format
+	 * `include_empty` - If set to "true" a record for every email address sent to will be returned even if there is no activity data. defaults to "false"
+	 * `since` - Only return activity recorded since a GMT timestamp - in YYYY-MM-DD HH:mm:ss format
 	 *
 	 * @param array $params
 	 * @return array Result
