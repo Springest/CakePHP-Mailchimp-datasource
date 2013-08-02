@@ -36,6 +36,15 @@ or call other regular Model methods (like `Model::find`) from any controller tha
 
 [1]: http://devblog.springest.com/mailchimp-datasource-cakephp
 
+## Debugging
+
+Unfortunately, the 1.3 vendor class from Mailchimp does not through exceptions. So if your methods return false and you need to know
+the error message/code you will have to use the following:
+
+	debug($this->MailchimpSubscriber->Mailchimp->errorCode);
+	debug($this->MailchimpSubscriber->Mailchimp->errorMessage);
+
+with `$this->MailchimpSubscriber` being your model.
 
 ## Dependencies
 
