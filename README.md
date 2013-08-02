@@ -4,6 +4,7 @@ With this datasource you can easily add users to your Mailchimp newsletter. It w
 
 Please check [the original blogpost][1] on our devblog for more background information.
 
+It uses the current API version 1.3 from Mailchimp.
 
 ## Setup
 
@@ -14,8 +15,7 @@ Add the `$mailchimp` datasource to `APP/Config/database.php`
 	public $mailchimp = array(
 		'datasource' => 'Mailchimp.MailchimpSubscriberSource',
 		'apikey' => 'YOUR_API_KEY',
-		'listId' => 'YOUR_LIST_ID',
-		'baseUrl' => 'http://us1.api.mailchimp.com/1.2/' // or another one, depending on the API version you use
+		'defaultListId' => 'YOUR_LIST_ID',
 	);
 
 For BC you can also use the Configure class to set the API data:
@@ -31,7 +31,8 @@ Include the Model where you need it via
 
     $this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
 
-When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`, or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
+When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`,
+or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
 
 [1]: http://devblog.springest.com/mailchimp-datasource-cakephp
 

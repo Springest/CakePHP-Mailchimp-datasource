@@ -15,7 +15,6 @@ class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 		$defaults = array(
 			'apiKey' => '',
 			'defaultListId' => '',
-			'baseUrl' => ''
 		);
 		$configs = (array)Configure::read('Mailchimp') + $defaults;
 		$this->MailchimpSubscriberSource = new MailchimpSubscriberSource($configs);
