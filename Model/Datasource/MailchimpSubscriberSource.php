@@ -60,13 +60,9 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @return array
 	 */
 	public function read(Model $model, $queryData = array()) {
-		//$url = $this->buildUrl('listMemberInfo', $queryData['conditions']['email']);
-		//$response = json_decode($this->connection->get($url), true);
 		$response = $this->Mailchimp->listMemberInfo($this->settings['defaultListId'], $queryData['conditions']['email']);
-
 		return $response;
 	}
-
 
 	/**
 	 * Add a subscriber to the list
@@ -106,8 +102,6 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @return boolean
 	 */
 	public function delete(Model $model, $id = null) {
-		//we can use $id instead of $email here, this is allowed as per Mailchimp's API docs,
-		//$url = $this->buildUrl('listUnsubscribe', $model->id);
 		$response = $this->Mailchimp->listUnsubscribe($this->settings['defaultListId'], $model->id);
 		return $response;
 	}
