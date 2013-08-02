@@ -70,7 +70,6 @@ class Mailchimp extends MailchimpAppModel {
 		return $this->Mailchimp->ping();
 	}
 
-
 	/**
 	 * Retrieve lots of account information including payments made, plan info, some account stats, installed modules,
 	 * contact info, and more. No private information like Credit Card numbers is available.

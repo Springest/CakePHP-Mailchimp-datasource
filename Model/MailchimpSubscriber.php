@@ -4,11 +4,15 @@ App::uses('MailchimpAppModel', 'Mailchimp.Model');
 
 class MailchimpSubscriber extends MailchimpAppModel {
 
-	public $validate = array('email' => array('email' => array('rule' => array('email'), 'message' => 'Please enter a valid e-mail address')));
+	public $validate = array(
+		'email' => array(
+			'email' => array(
+				'rule' => array('email'),
+				'message' => 'Please enter a valid e-mail address')));
 
 	/**
 	 * Use $_schema to set any mailchimp fields that you want to use
-	 * @var <type>
+	 * @var array
 	 */
 	protected $_schema = array(
 		'id' => array(
@@ -37,18 +41,67 @@ class MailchimpSubscriber extends MailchimpAppModel {
 		);
 
 	/**
+	 * Subscribe email address with optional additional data.
+	 *
+	 * @param array $queryData
+	 * - email (required)
+	 * - id (optional, defaults to default id)
+	 * - all other fields
+	 * @param array $options
+	 * - emailType
+	 * - doubleOptin
+	 * - updateExisting
+	 * - replaceInterests
+	 * - sendWelcome
 	 * @return boolean
 	 */
-	public function subscribe($queryData = array()) {
-		$response = $this->Mailchimp->listSubscribe($this->settings['defaultListId'], $queryData['email']);
+	public function subscribe($queryData, $options = array()) {
+		$id = $this->settings['defaultListId'];
+		if (isset($queryData['id'])) {
+			$id = $queryData['id'];
+			unset($queryData['id']);
+		}
+		$email = $queryData['email'];
+		unset($queryData['email']);
+
+		$defaults = array(
+			'emailType' => 'html',
+			'doubleOptin' => true,
+			'updateExisting' => false,
+			'replaceInterests' => true,
+			'sendWelcome' => false
+		);
+		$options += $defaults;
+		extract($options);
+
+		$response = $this->Mailchimp->listSubscribe($id, $email, $queryData, $emailType, $doubleOptin, $updateExisting, $replaceInterests, $sendWelcome);
 		return $response;
 	}
 
 	/**
+	 * Unsubscribe email address.
+	 *
+	 * @param array $queryData
+	 * - email (required)
+	 * - id (optional, defaults to default id)
+	 * @param array $options
+	 * - deleteMember
+	 * - sendGoodbye
+	 * - sendNotify
 	 * @return boolean
 	 */
-	public function unsubscribe($queryData = array()) {
-		$response = $this->Mailchimp->listUnsubscribe($this->settings['defaultListId'], $queryData['email']);
+	public function unsubscribe($queryData, $options = array()) {
+		$id = $this->settings['defaultListId'];
+
+		$defaults = array(
+			'deleteMember' => false,
+			'sendGoodbye' => true,
+			'sendNotify' => true
+		);
+		$options += $defaults;
+		extract($options);
+
+		$response = $this->Mailchimp->listUnsubscribe($id, $queryData['email'], $deleteMember, $sendGoodbye, $sendNotify);
 		return $response;
 	}
 

@@ -2,18 +2,17 @@
 App::uses('MailchimpAppController', 'Mailchimp.Controller');
 
 class MailchimpController extends MailchimpAppController {
-	
+
 	public $uses = array('Mailchimp.MailchimpSubscriber');
-	
+
 	public $paginate = array();
 
 	public function beforeFilter() {
 		parent::beforeFilter();
-		
+
 		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
 		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
 	}
-
 
 
 /****************************************************************************************
@@ -21,6 +20,11 @@ class MailchimpController extends MailchimpAppController {
  ****************************************************************************************/
 
 
+	/**
+	 * Main admin backend for mailchimp
+	 *
+	 * @return void
+	 */
 	public function admin_index() {
 		$filters = array();
 		if ($id = Configure::read('Mailchimp.defaultListId')) {
@@ -31,11 +35,9 @@ class MailchimpController extends MailchimpAppController {
 			throw new NotFoundException(__('No subscriber list found'));
 		}
 		$defaultList = array_shift($lists['data']);
-		
-		$this->set(compact('defaultList'));
+
+		$this->set(compact('defaultList', 'lists'));
 	}
-
-
 
 
 /****************************************************************************************
