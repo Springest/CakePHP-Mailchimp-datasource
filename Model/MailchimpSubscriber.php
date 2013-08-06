@@ -12,6 +12,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 
 	/**
 	 * Use $_schema to set any mailchimp fields that you want to use
+	 *
 	 * @var array
 	 */
 	protected $_schema = array(
@@ -34,14 +35,13 @@ class MailchimpSubscriber extends MailchimpAppModel {
 			'type' => 'string',
 			'null' => true,
 			'length' => 128),
-		'gender' => array(
-			'type' => 'string',
-			'null' => true,
-			'length' => 32),
 		);
 
 	/**
 	 * Subscribe email address with optional additional data.
+	 *
+	 * Note that it will automatically convert field names:
+	 * 'some_code' etc => 'somecode' (without underscores).
 	 *
 	 * @param array $queryData
 	 * - email (required)
@@ -53,7 +53,8 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * - updateExisting
 	 * - replaceInterests
 	 * - sendWelcome
-	 * @return boolean
+	 * @return boolean Success
+	 * @throws CakeException When length of merge var (10) is exceeded.
 	 */
 	public function subscribe($queryData, $options = array()) {
 		$id = $this->settings['defaultListId'];
@@ -63,6 +64,21 @@ class MailchimpSubscriber extends MailchimpAppModel {
 		}
 		$email = $queryData['email'];
 		unset($queryData['email']);
+
+		foreach ($queryData as $key => $value) {
+		if (strpos($key, '_') === false) {
+			if (strlen($key) > 10) {
+				throw new CakeException('Max length for merge vars is 10');
+			}
+			continue;
+		}
+		$newKey = str_replace('_', '', $key);
+		if (strlen($newKey) > 10) {
+				throw new CakeException('Max length for merge vars is 10');
+			}
+			$queryData[$newKey] = $value;
+			unset($queryData[$key]);
+		}
 
 		$defaults = array(
 			'emailType' => 'html',
@@ -88,7 +104,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * - deleteMember
 	 * - sendGoodbye
 	 * - sendNotify
-	 * @return boolean
+	 * @return boolean Success
 	 */
 	public function unsubscribe($queryData, $options = array()) {
 		$id = $this->settings['defaultListId'];
