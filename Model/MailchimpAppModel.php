@@ -18,7 +18,7 @@ class MailchimpAppModel extends AppModel {
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
 
-		$this->settings = array_merge($this->defaults, (array)Configure::read('Mailchimp'));
+		$this->settings = array_merge($this->_defaults, (array)Configure::read('Mailchimp'));
 
 		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
 		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
