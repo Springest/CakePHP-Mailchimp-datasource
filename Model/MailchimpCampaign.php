@@ -12,8 +12,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example xml-rpc_campaigns.php
 	 *
 	 * @param array $filters a hash of filters to apply to this query - all are optional:
-	 * @param int $start optional - control paging of campaigns, start results at this campaign #, defaults to 1st page of data  (page 0)
-	 * @param int $limit optional - control paging of campaigns, number of campaigns to return with each call, defaults to 25 (max=1000)
+	 * @param integer $start optional - control paging of campaigns, start results at this campaign #, defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional - control paging of campaigns, number of campaigns to return with each call, defaults to 25 (max=1000)
 	 * @return array an array containing a count of all matching campaigns and the specific ones for the current page (see Returned Fields for description)
 	 * @returnf int total the total number of campaigns matching the filters passed in
 	 * @returnf array data the data for each campaign being returned
@@ -28,7 +28,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Helper
 	 *
 	 * @param string $query terms to search on
-	 * @param int offset optional the paging offset to use if more than 100 records match
+	 * @param integer offset optional the paging offset to use if more than 100 records match
 	 * @param string snip_start optional by default clear text is returned. To have the match highlighted with something (like a strong HTML tag), <strong>both</strong> this and "snip_end" must be passed. You're on your own to not break the tags - 25 character max.
 	 * @param string snip_end optional see "snip_start" above.
 	 * @return array An array containing the total matches and current results
@@ -37,8 +37,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * string snippet the matching snippet for the campaign
 	 * array campaign the matching campaign's details - will return same data as single campaign from campaigns()
 	 */
-	public function search($query, $offset = 0, $snip_start = null, $snip_end = null) {
-		return $this->Mailchimp->searchCampaigns($query, $offset, $snip_start, $snip_end);
+	public function search($query, $offset = 0, $snipStart = null, $snipEnd = null) {
+		return $this->Mailchimp->searchCampaigns($query, $offset, $snipStart, $snipEnd);
 	}
 
 	/**
@@ -66,12 +66,12 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example xml-rpc_campaignSchedule.php
 	 *
 	 * @param string $cid the id of the campaign to schedule
-	 * @param string $schedule_time the time to schedule the campaign. For A/B Split "schedule" campaigns, the time for Group A - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
-	 * @param string $schedule_time_b optional -the time to schedule Group B of an A/B Split "schedule" campaign - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
+	 * @param string $scheduleTime the time to schedule the campaign. For A/B Split "schedule" campaigns, the time for Group A - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
+	 * @param string $scheduleTimeB optional -the time to schedule Group B of an A/B Split "schedule" campaign - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return boolean true on success
 	 */
-	public function campaignSchedule($cid, $schedule_time, $schedule_time_b = null) {
-		return $this->Mailchimp->campaignSchedule($cid, $schedule_time, $schedule_time_b);
+	public function campaignSchedule($cid, $scheduleTime, $scheduleTimeB = null) {
+		return $this->Mailchimp->campaignSchedule($cid, $scheduleTime, $scheduleTimeB);
 	}
 
 	/**
@@ -116,16 +116,16 @@ class MailchimpCampaign extends MailchimpAppModel {
 	/**
 	 * Send a test of this campaign to the provided email address
 	 *
-	 * @param array $test_emails an array of email address to receive the test message
-	 * @param string $send_type optional by default (null) both formats are sent - "html" or "text" send just that format
+	 * @param array $testEmails an array of email address to receive the test message
+	 * @param string $sendType optional by default (null) both formats are sent - "html" or "text" send just that format
 	 * @param string $cid the id of the campaign to test
 	 * @return boolean true on success
 	 */
-	public function campaignSendTest(array $test_emails = array(), $send_type = null, $cid = null) {
+	public function campaignSendTest(array $testEmails = array(), $sendType = null, $cid = null) {
 		if (!$cid) {
 			$cid = $this->settings['defaultCampaignId'];
 		}
-		return $this->Mailchimp->campaignSendTest($cid, $test_emails, $send_type);
+		return $this->Mailchimp->campaignSendTest($cid, $testEmails, $sendType);
 	}
 
 	/**
@@ -135,12 +135,12 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example mcapi_campaignSegmentTest.php
 	 * @example xml-rpc_campaignSegmentTest.php
 	 *
-	 * @param string $list_id the list to test segmentation on - get lists using lists()
+	 * @param string $listId the list to test segmentation on - get lists using lists()
 	 * @param array $options with 2 keys:
-	 * @return int total The total number of subscribers matching your segmentation options
+	 * @return integer total The total number of subscribers matching your segmentation options
 	 */
-	public function campaignSegmentTest($list_id, array $options) {
-		return $this->Mailchimp->campaignSegmentTest($list_id, $options);
+	public function campaignSegmentTest($listId, array $options) {
+		return $this->Mailchimp->campaignSegmentTest($listId, $options);
 	}
 
 	/**
@@ -156,8 +156,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @param array $options a hash of the standard options for this campaign :     *
 	 * @return string the ID for the created campaign
 	 */
-	public function campaignCreate($type, array $options, $content, array $segment_opts = null, array $type_opts = null) {
-		return $this->Mailchimp->campaignCreate($type, $options, $content, $segment_opts, $type_opts);
+	public function campaignCreate($type, array $options, $content, array $segmentOpts = null, array $typeOpts = null) {
+		return $this->Mailchimp->campaignCreate($type, $options, $content, $segmentOpts, $typeOpts);
 	}
 
 	/** Update just about any setting for a campaign that has <em>not</em> been sent. See campaignCreate() for details.
@@ -292,8 +292,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @param string $cid the campaign id to pull members for (can be gathered using campaigns())
 	 * @param string $status optional the status to pull - one of 'sent', 'hard' (bounce), or 'soft' (bounce). By default, all records are returned
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array a total of all matching emails and the specific emails for this page
 	 * @returnf int total   the total number of members for the campaign and status
 	 * @returnf array data  the full campaign member records
@@ -310,8 +310,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Stats
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array a total of all hard bounced emails and the specific emails for this page
 	 * @returnf int total   the total number of hard bounces for the campaign
 	 * @returnf array data  the full email addresses that bounced
@@ -328,8 +328,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Stats
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array a total of all soft bounced emails and the specific emails for this page
 	 * @returnf int total   the total number of soft bounces for the campaign
 	 * @returnf array data the full email addresses that bounced
@@ -344,8 +344,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Stats
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array email addresses that unsubscribed from this campaign along with reasons, if given
 	 * @return array a total of all unsubscribed emails and the specific emails for this page
 	 * @returnf int total   the total number of unsubscribes for the campaign
@@ -363,8 +363,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example mcapi_campaignAbuseReports.php
 	 *
 	 * @param string $cid the campaign id to pull abuse reports for (can be gathered using campaigns())
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return array reports the abuse reports for this campaign
 	 * @returnf string date date/time the abuse report was received and processed
@@ -493,8 +493,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example mcapi_campaignBounceMessages.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 25, upper limit set at 50
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 25, upper limit set at 50
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD format in <strong>GMT</strong> (we only store the date, not the time)
 	 * @return array bounces the full bounce messages for this campaign
 	 * @returnf int total that total number of bounce messages for the campaign
@@ -510,8 +510,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Stats
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 500
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 500
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return array the total matching orders and the specific orders for the requested page
 	 * @returnf int total the total matching orders
@@ -544,13 +544,13 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Related
 	 *
 	 * @param string $cid the campaign id to get content for (can be gathered using campaigns())
-	 * @param bool   $for_archive optional controls whether we return the Archive version (true) or the Raw version (false), defaults to true
+	 * @param boolean   $forArchive optional controls whether we return the Archive version (true) or the Raw version (false), defaults to true
 	 * @return struct Struct containing all content for the campaign (see Returned Fields for details
 	 * @returnf string html The HTML content used for the campgain with merge tags intact
 	 * @returnf string text The Text content used for the campgain with merge tags intact
 	 */
-	public function campaignContent($cid, $for_archive = true) {
-		return $this->Mailchimp->campaignContent($cid, $for_archive);
+	public function campaignContent($cid, $forArchive = true) {
+		return $this->Mailchimp->campaignContent($cid, $forArchive);
 	}
 
 	/**
@@ -573,8 +573,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign Report Data
 	 *
 	 * @param string $cid the campaign id to get opens for (can be gathered using campaigns())
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array array containing the total records matched and the specific records for this page
 	 * @returnf int total the total number of records matched
 	 * @returnf array data the actual opens data, including:
@@ -589,8 +589,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign Report Data
 	 *
 	 * @param string $cid the campaign id to get no opens for (can be gathered using campaigns())
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array array containing the total records matched and the specific records for this page
 	 * @returnf int total the total number of records matched
 	 * @returnf array data the email addresses that did not open the campaign
@@ -606,8 +606,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @param string $cid the campaign id to get click stats for (can be gathered using campaigns())
 	 * @param string $url the URL of the link that was clicked on
-	 * @param int    $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int    $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array array containing the total records matched and the specific records for this page
 	 * @returnf int total the total number of records matched
 	 * @returnf array data the email addresses that did not open the campaign
@@ -622,14 +622,14 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign Report Data
 	 *
 	 * @param string $cid the campaign id to get stats for (can be gathered using campaigns())
-	 * @param array $email_address an array of up to 50 email addresses to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns. For backwards compatibility, if a string is passed, it will be treated as an array with a single element (will not work with XML-RPC).
+	 * @param array $emailAddress an array of up to 50 email addresses to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns. For backwards compatibility, if a string is passed, it will be treated as an array with a single element (will not work with XML-RPC).
 	 * @return array an array with the keys listed in Returned Fields below
 	 * @returnf int success the number of email address records found
 	 * @returnf int error the number of email address records which could not be found
 	 * @returnf array data arrays containing the actions (opens and clicks) that the email took, with timestamps
 	 */
-	public function campaignEmailStatsAIM($cid, $email_address) {
-		return $this->Mailchimp->campaignEmailStatsAIM($cid, $email_address);
+	public function campaignEmailStatsAIM($cid, $emailAddress) {
+		return $this->Mailchimp->campaignEmailStatsAIM($cid, $emailAddress);
 	}
 
 	/**
@@ -640,8 +640,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @example mcapi_campaignEmailStatsAIMAll.php
 	 *
 	 * @param string $cid the campaign id to get stats for (can be gathered using campaigns())
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 1000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 1000
 	 * @return array Array containing a total record count and data including the actions  (opens and clicks) for each email, with timestamps
 	 * @returnf int total the total number of records
 	 * @returnf array data each record with their details:
@@ -660,7 +660,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @section Campaign  Related
 	 *
 	 * @param array $order an array of information pertaining to the order that has completed. Use the following keys:
-	 * @return bool true if the data is saved, otherwise an error is thrown.
+	 * @return boolean true if the data is saved, otherwise an error is thrown.
 	 */
 	public function campaignEcommOrderAdd(array $order) {
 		return $this->Mailchimp->campaignEcommOrderAdd($order);

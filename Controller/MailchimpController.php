@@ -14,11 +14,9 @@ class MailchimpController extends MailchimpAppController {
 		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
 	}
 
-
 /****************************************************************************************
  * USER functions
  ****************************************************************************************/
-
 
 	/**
 	 * Main admin backend for mailchimp
@@ -39,11 +37,9 @@ class MailchimpController extends MailchimpAppController {
 		$this->set(compact('defaultList', 'lists'));
 	}
 
-
 /****************************************************************************************
  * protected/interal functions
  ****************************************************************************************/
-
 
 /****************************************************************************************
  * deprecated/test functions

@@ -128,9 +128,9 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * @param string $id the list id to connect to. Get by calling lists()
 	 * @param string $status the status to get members for - one of(subscribed, unsubscribed, <a target="_blank" href="http://eepurl.com/gWOO">cleaned</a>, updated), defaults to subscribed
 	 * @param string $since optional pull all members whose status (subscribed/unsubscribed/cleaned) has changed or whose profile (updated) has changed since this date/time - 24 hour format in <strong>GMT</strong>, eg "2013-12-30 20:30:00"
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 15000
-	 * @param string $sort_dir optional ASC for ascending, DESC for descending. defaults to ASC even if an invalid value is encountered.
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 15000
+	 * @param string $sortDir optional ASC for ascending, DESC for descending. defaults to ASC even if an invalid value is encountered.
 	 * @return array Array of a the total records match and matching list member data for this page (see Returned Fields for details)
 	 * int total the total matching records
 	 * array data the data for each member, including:
@@ -139,11 +139,11 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * string reason For unsubscribes only - the reason collected for the unsubscribe. If populated, one of 'NORMAL','NOSIGNUP','INAPPROPRIATE','SPAM','OTHER'
 	 * string reason_text For unsubscribes only - if the reason is OTHER, the text entered.
 	 */
-	public function listMembers($status = 'subscribed', $since = null, $start = 0, $limit = 100, $sort_dir = 'ASC', $id = null) {
+	public function listMembers($status = 'subscribed', $since = null, $start = 0, $limit = 100, $sortDir = 'ASC', $id = null) {
 		if (!$id) {
 			$id = $this->settings['defaultListId'];
 		}
-		return $this->Mailchimp->listMembers($id, $status, $since, $start, $limit, $sort_dir);
+		return $this->Mailchimp->listMembers($id, $status, $since, $start, $limit, $sortDir);
 	}
 
 	/**
@@ -151,7 +151,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 *
 	 * @param string $query terms to search on, <a href="http://kb.mailchimp.com/article/i-cant-find-a-recipient-on-my-list" target="_blank">just like you do in the app</a>
 	 * @param string $id optional the list id to limit the search to. Get by calling lists()
-	 * @param int offset optional the paging offset to use if more than 100 records match
+	 * @param integer offset optional the paging offset to use if more than 100 records match
 	 * @return array An array of both exact matches and partial matches over a full search
 	 * array exact_matches
 	 * int total total members matching
@@ -170,24 +170,24 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	/**
 	 * Retrieve all List Ids a member is subscribed to.
 	 *
-	 * @param string $email_address the email address to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns
+	 * @param string $emailAddress the email address to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns
 	 * @return array An array of list_ids the member is subscribed to.
 	 */
-	public function listsForEmail($email_address) {
-		return $this->Mailchimp->listsForEmail($email_address);
+	public function listsForEmail($emailAddress) {
+		return $this->Mailchimp->listsForEmail($emailAddress);
 	}
 
 	/**
 	 * Retrieve all Campaigns Ids a member was sent
 	 *
-	 * @param string $email_address the email address to unsubscribe  OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns
+	 * @param string $emailAddress the email address to unsubscribe  OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns
 	 * @param array $options optional extra options to modify the returned data.
 	 * string list_id optional A list_id to limit the campaigns to
 	 * bool   verbose optional Whether or not to return verbose data (beta - this will change the return format into something undocumented, but consistent). defaults to false
 	 * @return array An array of campaign_ids the member received
 	 */
-	public function campaignsForEmail($email_address, array $options = array()) {
-		return $this->Mailchimp->campaignsForEmail($email_address, $options);
+	public function campaignsForEmail($emailAddress, array $options = array()) {
+		return $this->Mailchimp->campaignsForEmail($emailAddress, $options);
 	}
 
 	/**

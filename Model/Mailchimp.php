@@ -143,7 +143,7 @@ class Mailchimp extends MailchimpAppModel {
 	 * int order_id the order number credits were applied to
 	 * string order_desc the order description
 	 */
-	function getAccountDetails(array $exclude = array()) {
+	public function getAccountDetails(array $exclude = array()) {
 		return $this->Mailchimp->getAccountDetails($exclude);
 	}
 
@@ -161,14 +161,13 @@ class Mailchimp extends MailchimpAppModel {
 		return $this->Mailchimp->getVerifiedDomains();
 	}
 
-
 	/**
 	 * Get the most recent 100 activities for particular list members (open, click, bounce, unsub, abuse, sent to)
 	 *
 	 * @section List Related
 	 *
 	 * @param string $id the list id to connect to. Get by calling lists()
-	 * @param array $email_address an array of up to 50 email addresses to get information for OR the "id"(s) for the member returned from listMembers, Webhooks, and Campaigns.
+	 * @param array $emailAddress an array of up to 50 email addresses to get information for OR the "id"(s) for the member returned from listMembers, Webhooks, and Campaigns.
 	 * @return array array of data and success/error counts
 	 * int success the number of subscribers successfully found on the list
 	 * int errors the number of subscribers who were not found on the list
@@ -180,11 +179,11 @@ class Mailchimp extends MailchimpAppModel {
 	 * string bounce_type For backwards compat, this will exist and be the same data as "type"
 	 * string campaign_id The campaign id the action was related to, if it exists - otherwise empty (ie, direct unsub from list)
 	 */
-	public function listMemberActivity($email_address, $id = null) {
+	public function listMemberActivity($emailAddress, $id = null) {
 		if (!$id) {
 			$id = $this->settings['defaultListId'];
 		}
-		return $this->Mailchimp->listMemberActivity($id, $email_address);
+		return $this->Mailchimp->listMemberActivity($id, $emailAddress);
 	}
 
 	/**
@@ -195,8 +194,8 @@ class Mailchimp extends MailchimpAppModel {
 	 * @example mcapi_listAbuseReports.php
 	 *
 	 * @param string $id the list id to pull abuse reports for (can be gathered using lists())
-	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param int $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
+	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
 	 * @param string $since optional pull only messages since this time - 24 hour format in <strong>GMT</strong>, eg "2013-12-30 20:30:00"
 	 * @return array the total of all reports and the specific reports reports this page
 	 * int total the total number of matching abuse reports
@@ -254,7 +253,7 @@ class Mailchimp extends MailchimpAppModel {
 	 * int other_adds number of non-double optin subscribes for the list (manual, API, or import)
 	 * int other_removes number of non-manual unsubscribes for the list (deletions, empties, soft-bounce removals)
 	 */
-	function listActivity($id = null) {
+	public function listActivity($id = null) {
 		if (!$id) {
 			$id = $this->settings['defaultListId'];
 		}
