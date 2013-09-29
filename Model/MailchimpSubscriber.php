@@ -66,14 +66,14 @@ class MailchimpSubscriber extends MailchimpAppModel {
 		unset($queryData['email']);
 
 		foreach ($queryData as $key => $value) {
-		if (strpos($key, '_') === false) {
-			if (strlen($key) > 10) {
-				throw new CakeException('Max length for merge vars is 10');
+			if (strpos($key, '_') === false) {
+				if (strlen($key) > 10) {
+					throw new CakeException('Max length for merge vars is 10');
+				}
+				continue;
 			}
-			continue;
-		}
-		$newKey = str_replace('_', '', $key);
-		if (strlen($newKey) > 10) {
+			$newKey = str_replace('_', '', $key);
+			if (strlen($newKey) > 10) {
 				throw new CakeException('Max length for merge vars is 10');
 			}
 			$queryData[$newKey] = $value;
@@ -124,7 +124,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	/**
 	 * Get all of the list members for a list that are of a particular status. Are you trying to get a dump including lots of merge
 	 * data or specific members of a list? If so, checkout the <a href="/export">Export API</a>
-
+	 *
 	 * @param string $id the list id to connect to. Get by calling lists()
 	 * @param string $status the status to get members for - one of(subscribed, unsubscribed, <a target="_blank" href="http://eepurl.com/gWOO">cleaned</a>, updated), defaults to subscribed
 	 * @param string $since optional pull all members whose status (subscribed/unsubscribed/cleaned) has changed or whose profile (updated) has changed since this date/time - 24 hour format in <strong>GMT</strong>, eg "2013-12-30 20:30:00"
@@ -192,6 +192,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 
 	/**
 	 * Override del method from model.php class, because it would block deleting when useTable = false and no records exists
+	 *
 	 * @param <type> $id
 	 * @param <type> $cascade
 	 * @return <type>

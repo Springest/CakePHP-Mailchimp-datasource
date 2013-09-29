@@ -18,12 +18,12 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	}
 
 	public function testBasicSubscription() {
-		$res = $this->MailchimpSubscriber->subscribe(array('email'=>'kontakt@markscherer.de'));
+		$res = $this->MailchimpSubscriber->subscribe(array('email' => 'kontakt@markscherer.de'));
 		$this->debug($res);
 	}
 
 	public function testBasicUnsubscription() {
-		$res = $this->MailchimpSubscriber->unsubscribe(array('email'=>'kontakt@markscherer.de'));
+		$res = $this->MailchimpSubscriber->unsubscribe(array('email' => 'kontakt@markscherer.de'));
 		$this->debug($res);
 	}
 
