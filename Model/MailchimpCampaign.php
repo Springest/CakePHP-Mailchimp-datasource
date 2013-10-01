@@ -162,7 +162,6 @@ class MailchimpCampaign extends MailchimpAppModel {
 
 	/** Update just about any setting for a campaign that has <em>not</em> been sent. See campaignCreate() for details.
 	 *
-	 *
 	 *  Caveats:<br/><ul>
 	 *        <li>If you set list_id, all segmentation options will be deleted and must be re-added.</li>
 	 *        <li>If you set template_id, you need to follow that up by setting it's 'content'</li>
@@ -422,7 +421,6 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @section Campaign  Stats
 	 *
-	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @return array countries an array of countries where opens occurred
 	 * @returnf string code The ISO3166 2 digit country code
@@ -438,7 +436,6 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * Retrieve the regions and number of opens tracked for a certain country. Email address are not returned.
 	 *
 	 * @section Campaign  Stats
-	 *
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @param string $code An ISO3166 2 digit country code
@@ -456,7 +453,6 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @section Campaign  Stats
 	 *
-	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @return array stats an array containing tweets, retweets, clicks, and referrer related to using the campaign's eepurl
 	 * @returnf array twitter various Twitter related stats
@@ -468,7 +464,6 @@ class MailchimpCampaign extends MailchimpAppModel {
 	/**
 	 * Retrieve the most recent full bounce message for a specific email address on the given campaign.
 	 * Messages over 30 days old are subject to being removed
-	 *
 	 *
 	 * @section Campaign  Stats
 	 *

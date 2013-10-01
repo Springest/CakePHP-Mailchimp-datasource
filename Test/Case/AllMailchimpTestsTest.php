@@ -1,6 +1,6 @@
 <?php
 /**
- * group test - Mailchimp
+ * Group test - Mailchimp
  */
 class AllMailchimpTestsTest extends PHPUnit_Framework_TestSuite {
 

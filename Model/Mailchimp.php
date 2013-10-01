@@ -238,7 +238,6 @@ class Mailchimp extends MailchimpAppModel {
 	 *
 	 * @section List Related
 	 *
-	 *
 	 * @param string $id the list id to connect to. Get by calling lists()
 	 * @return array array of array of daily values, each containing:
 	 * string day The day in YYYY-MM-DD
