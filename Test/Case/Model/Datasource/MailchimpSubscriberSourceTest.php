@@ -27,20 +27,20 @@ class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 
 	public function testRead() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
-		$res = $this->MailchimpSubscriberSource->read($Model, array('conditions'=>array('email'=>'markscherer@gmx.de')));
+		$res = $this->MailchimpSubscriberSource->read($Model, array('conditions' => array('email' => 'mark@example.org')));
 		$this->debug($res);
 	}
 
 	public function _testCreate() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
-		$res = $this->MailchimpSubscriberSource->create($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
+		$res = $this->MailchimpSubscriberSource->create($Model, array('conditions' => array('email' => 'mark@example.org')));
 		//$this->assertTrue($res);
 		$this->debug($res);
 	}
 
 	public function _testDelete() {
 		$Model = ClassRegistry::init('Mailchimp.NewsletterSubscriber');
-		$res = $this->MailchimpSubscriberSource->delete($Model, array('conditions'=>array('email'=>'kontakt@markscherer.de')));
+		$res = $this->MailchimpSubscriberSource->delete($Model, array('conditions' => array('email' => 'mark@example.org')));
 		//$this->assertTrue($res);
 		$this->debug($res);
 	}
