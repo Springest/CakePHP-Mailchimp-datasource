@@ -18,6 +18,7 @@ class MailchimpSubscriberSource extends DataSource {
 
 	/**
 	 * Construct our Datasource Class
+	 *
 	 * @param <type> $config
 	 */
 	public function __construct($config = array()) {
@@ -35,6 +36,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 * ListSources()
 	 *
 	 * Required by CakePHP
+	 *
 	 * @return <type>
 	 */
 	public function listSources() {
@@ -42,9 +44,10 @@ class MailchimpSubscriberSource extends DataSource {
 	}
 
 	/**
-	 * describe()
+	 * Describe()
 	 *
 	 * Required by CakePHP
+	 *
 	 * @param <type> $model
 	 * @return <type>
 	 */
