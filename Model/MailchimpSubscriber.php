@@ -122,6 +122,70 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	}
 
 	/**
+	 * Subscribe a batch of email addresses to a list at once.
+	 * Maximum batch sizes vary based on the amount of data in each record,
+	 * though you should cap them at 5k - 10k records, depending on your experience.
+	 * These calls are also long, so be sure you increase your timeout values.
+	 *
+	 * $emails should be an array of arrays, containing at least "email" as key.
+	 * "type" (html/text) is optional.
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/batch-subscribe.php
+	 *
+	 * @param array $emails
+	 * @param array $options
+	 * @return array
+	 */
+	public function batchSubscribe($emails, $options = array()) {
+		$id = $this->settings['defaultListId'];
+
+		$defaults = array(
+			'emailType' => 'html',
+			'doubleOptin' => true,
+			'updateExisting' => false,
+			'replaceInterests' => true,
+		);
+		$options += $defaults;
+		extract($options);
+
+		$batch = array();
+		foreach ($emails as $email) {
+			if (empty($email['type'])) {
+				$email['type'] = $options['emailType'];
+			}
+			$batch[] = array(
+				'EMAIL' => $email['email'],
+				'EMAIL_TYPE' => $email['type']
+			);
+		}
+
+		return $this->Mailchimp->listBatchSubscribe($id, $batch, $doubleOptin, $updateExisting, $replaceInterests);
+	}
+
+	/**
+	 * MailchimpSubscriber::batchUnsubscribe()
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/batch-unsubscribe.php
+	 *
+	 * @param array $emails
+	 * @param array $options
+	 * @return array
+	 */
+	public function batchUnsubscribe($emails, $options = array()) {
+		$id = $this->settings['defaultListId'];
+
+		$defaults = array(
+			'deleteMember' => false,
+			'sendGoodbye' => true,
+			'sendNotify' => true
+		);
+		$options += $defaults;
+		extract($options);
+
+		return $this->Mailchimp->listBatchUnsubscribe($id, $emails, $deleteMember, $sendGoodbye, $sendNotify);
+	}
+
+	/**
 	 * Get all of the list members for a list that are of a particular status. Are you trying to get a dump including lots of merge
 	 * data or specific members of a list? If so, checkout the <a href="/export">Export API</a>
 	 *
