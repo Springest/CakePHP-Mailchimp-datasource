@@ -1,6 +1,6 @@
 # Cakephp Plugin for Mailchimp
 
-With this datasource you can easily add users to your Mailchimp newsletter. It works with CakePHP 2.0+.
+With this datasource you can easily add users to your Mailchimp newsletter. It works with CakePHP 2.x.
 
 Please check [the original blogpost][1] on our devblog for more background information.
 
@@ -10,6 +10,31 @@ It uses the current API version 2.0 from Mailchimp.
 
 Copy the plugin into the `APP/Plugin` folder and make sure it is loaded using `CakePlugin::loadAll()`, for example.
 
+Use the Configure class to set the API data:
+
+	$config['Mailchimp'] = array(
+		'apiKey' => 'YOUR_API_KEY',
+		'defaultListId' => 'YOUR_LIST_ID',
+		'defaultCampaignId => 'YOUR_CAMPAIGN_ID'
+	);
+
+## Usage
+
+Include the Model where you need it via
+
+    $this->Mailchimp = ClassRegistry::init('Mailchimp.Mailchimp');
+
+    $this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
+
+    $this->MailchimpCampaign = ClassRegistry::init('Mailchimp.MailchimpCampaign');
+
+Either use the available wrapper functionality or directly invoke `call()` on the models;
+
+### Usage of Subscriber datasource
+
+Warning: For the subscriptions there is also a datasource approach available.
+This is not yet fully tested/working for API 2.0, though.
+
 Add the `$mailchimp` datasource to `APP/Config/database.php`
 
 	public $mailchimp = array(
@@ -18,19 +43,6 @@ Add the `$mailchimp` datasource to `APP/Config/database.php`
 		'defaultListId' => 'YOUR_LIST_ID',
 	);
 
-For BC you can also use the Configure class to set the API data:
-
-	$config['Mailchimp'] = array(
-		'apiKey' => 'YOUR_API_KEY',
-		'defaultListId' => 'YOUR_LIST_ID',
-	);
-
-## Usage
-
-Include the Model where you need it via
-
-    $this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
-
 When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`,
 or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
 
@@ -38,12 +50,18 @@ or call other regular Model methods (like `Model::find`) from any controller tha
 
 ## Debugging
 
-Unfortunately, the 2.0 vendor class from Mailchimp does not through exceptions. So if your methods return false and you need to know
+Unfortunately, the 2.0 vendor class from Mailchimp does not through exceptions by itself. So if your methods return false and you need to know
 the error message/code you will have to use the following:
 
 	debug($this->MailchimpSubscriber->response);
 
 with `$this->MailchimpSubscriber` being your model.
+
+You can, however, make the plugin throw exceptions using
+
+	Configure::write('Mailchimp.exceptions', true);
+
+This will then throw a `MailchimpException` you can catch, log away and continue in your code.
 
 ## Dependencies
 
