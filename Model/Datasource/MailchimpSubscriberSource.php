@@ -7,10 +7,12 @@ App::uses('DataSource', 'Model/Datasource');
  *
  * Used for saving, selecting and deleting Subscribers
  *
- * Example URL:
- * http://api.mailchimp.com/1.2/?method=listSubscribe&apikey=<apikey>&id=<list id>&email_address=<email_address>&merge_vars[FNAME]=Firstname&merge_vars[LNAME]=Lastname&merge_vars[INTERESTS]=Dogs,Cats,Shoes&output=json
+ * @see http://apidocs.mailchimp.com/api/2.0/#api-endpoints
  *
- * Use the $_schema in the model to supply custom values. The names must coincide with the values you created in mailchimp
+ * //TODO: make it 2.0 API compatible
+ *
+ * Uses the $_schema in the model to supply custom values.
+ * The names must coincide with the values you created in mailchimp
  */
 class MailchimpSubscriberSource extends DataSource {
 
@@ -26,8 +28,8 @@ class MailchimpSubscriberSource extends DataSource {
 		//set ApiKey, default list Id and baseUrl
 		$this->settings = $config;
 
-		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
-		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
+		App::import('Vendor', 'Mailchimp.MailChimp/MailChimp');
+		$this->Mailchimp = new \Drewm\MailChimp(Configure::read('Mailchimp.apiKey'));
 
 		parent::__construct($config);
 	}
@@ -39,7 +41,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 *
 	 * @return <type>
 	 */
-	public function listSources() {
+	public function listSources($data = null) {
 		return array('Mailchimp');
 	}
 
@@ -62,7 +64,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @param array $queryData
 	 * @return array
 	 */
-	public function read(Model $model, $queryData = array()) {
+	public function read(Model $model, $queryData = array(), $recursive = null) {
 		$response = $this->Mailchimp->listMemberInfo($this->settings['defaultListId'], $queryData['conditions']['email']);
 		return $response;
 	}

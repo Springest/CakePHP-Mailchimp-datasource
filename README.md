@@ -4,7 +4,7 @@ With this datasource you can easily add users to your Mailchimp newsletter. It w
 
 Please check [the original blogpost][1] on our devblog for more background information.
 
-It uses the current API version 1.3 from Mailchimp.
+It uses the current API version 2.0 from Mailchimp.
 
 ## Setup
 
@@ -38,11 +38,10 @@ or call other regular Model methods (like `Model::find`) from any controller tha
 
 ## Debugging
 
-Unfortunately, the 1.3 vendor class from Mailchimp does not through exceptions. So if your methods return false and you need to know
+Unfortunately, the 2.0 vendor class from Mailchimp does not through exceptions. So if your methods return false and you need to know
 the error message/code you will have to use the following:
 
-	debug($this->MailchimpSubscriber->Mailchimp->errorCode);
-	debug($this->MailchimpSubscriber->Mailchimp->errorMessage);
+	debug($this->MailchimpSubscriber->response);
 
 with `$this->MailchimpSubscriber` being your model.
 
@@ -55,4 +54,4 @@ Possibly my Tools plugin for the admin backend (optional)
 
 MIT Licence
 
-Modified 2012 Mark Scherer: added tests + some basic admin backend and made it a plugin
+2013 Mark Scherer: Upgraded Mailchimp API from 1.3 to 2.0

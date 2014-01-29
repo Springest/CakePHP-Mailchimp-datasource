@@ -5,16 +5,6 @@ App::uses('HttpSocket', 'Network/Http');
 class MailchimpExport extends MailchimpAppModel {
 
 	/**
-	 * Return all lists with detailed information and statistics
-	 *
-	 * @return array
-	 */
-	public function getLists() {
-		$response = $this->Mailchimp->lists();
-		return $response;
-	}
-
-	/**
 	 * Exports/dumps members of a list and all of their associated details.
 	 *
 	 * Optional params:
@@ -54,11 +44,11 @@ class MailchimpExport extends MailchimpAppModel {
 	 */
 	protected function _get($type, $params) {
 		$url = 'http://:dc.api.mailchimp.com/export/1.0/';
-		$dc = Configure::read('Mailchimp.apiKey');
-		$dc = substr($dc, strpos($dc, '-') + 1);
+		$apiKey = Configure::read('Mailchimp.apiKey');
+		$dc = substr($apiKey, strpos($apiKey, '-') + 1);
 		$url = String::insert($url, array('dc' => $dc));
 
-		$params += array('apikey' => Configure::read('Mailchimp.apiKey'), 'id' => Configure::read('Mailchimp.defaultListId'));
+		$params += array('apikey' => $apiKey, 'id' => Configure::read('Mailchimp.defaultListId'));
 		$url .= $type . '/';
 
 		$Socket = new HttpSocket();
@@ -70,7 +60,7 @@ class MailchimpExport extends MailchimpAppModel {
 				$result[] = json_decode($line, true);
 			}
 			if (!empty($result[0]['error'])) {
-				throw new CakeException('Error ' . $result[0]['code'] . ': ' . $result[0]['error']);
+				throw new MailchimpException('Error ' . $result[0]['code'] . ': ' . $result[0]['error']);
 			}
 			return $result;
 		}

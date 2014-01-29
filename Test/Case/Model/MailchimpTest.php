@@ -24,19 +24,56 @@ class MailchimpTest extends MyCakeTestCase {
 	 */
 	public function testPing() {
 		$res = $this->Mailchimp->ping();
-		$this->debug($res);
-		$this->assertEquals('Everything\'s Chimpy!', $res);
+		$this->assertEquals(array('msg' => 'Everything\'s Chimpy!'), $res);
 	}
 
 	/**
-	 * MailchimpTest::testApiKeys()
+	 * MailchimpTest::testInlineCss()
 	 *
 	 * @return void
 	 */
-	public function testApiKeys() {
-		$res = $this->Mailchimp->apikeys(null, null);
-		$this->debug($res);
-		$this->assertFalse($res);
+	public function testInlineCss() {
+		$html = <<<HTML
+<style>
+div.x {
+	font-weight: bold;
+}
+</style>
+<h1>Header</h1>
+<div class="x">Some bold text</div>
+End of block.
+HTML;
+		$res = $this->Mailchimp->inlineCss($html);
+		$expected = array(
+			'html' => '
+<h1>Header</h1>
+<div class="x" style="font-weight: bold;">Some bold text</div>
+End of block.'
+		);
+		$this->assertEquals($expected, $res);
+	}
+
+	/**
+	 * MailchimpTest::testInlineCss()
+	 *
+	 * @return void
+	 */
+	public function testGenerateText() {
+		$html = <<<HTML
+<h1>Header</h1>
+<div class="x">Some bold text</div>
+End of block.
+HTML;
+		$res = $this->Mailchimp->generateText('html', array('html' => $html));
+		$expected = <<<TEXT
+** Header
+------------------------------------------------------------
+
+Some bold text
+
+End of block.
+TEXT;
+		$this->assertTextEquals($expected, trim($res['text']));
 	}
 
 }

@@ -7,9 +7,17 @@ class MailchimpAppModel extends AppModel {
 
 	public $useTable = false;
 
+	/**
+	 * Response when not using exceptions
+	 *
+	 * @var array
+	 */
+	public $response = array();
+
 	public $Mailchimp;
 
 	protected $_defaults = array(
+		'exceptions' => false,
 		'apiKey' => '',
 		'defaultListId' => '',
 		'defaultCampaignId' => '',
@@ -20,8 +28,28 @@ class MailchimpAppModel extends AppModel {
 
 		$this->settings = array_merge($this->_defaults, (array)Configure::read('Mailchimp'));
 
-		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
-		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
+		App::import('Vendor', 'Mailchimp.MailChimp/MailChimp');
+		$this->Mailchimp = new \Drewm\MailChimp(Configure::read('Mailchimp.apiKey'));
+	}
+
+	/**
+	 * MailchimpAppModel::call()
+	 *
+	 * @return mixed
+	 */
+	public function call($method, array $options = array()) {
+		$args = array();
+		foreach ($options as $key => $value) {
+			$args[Inflector::underscore($key)] = $value;
+		}
+		$this->response = $this->Mailchimp->call($method, $args);
+		if (!isset($this->response['status'])) {
+			return $this->response;
+		}
+		if ($this->settings['exceptions']) {
+			throw new MailchimpException($this->getError());
+		}
+		return false;
 	}
 
 	/**
@@ -29,11 +57,14 @@ class MailchimpAppModel extends AppModel {
 	 *
 	 * @return string Error message
 	 */
-	public function getError() {
-		if (!$this->Mailchimp->errorCode) {
-			return 'Error ' . $this->Mailchimp->errorCode . ': ' . $this->Mailchimp->errorMessage;
+	public function getError($full = false) {
+		if (isset($this->response['status'])) {
+			return 'Error ' . $this->response['code'] . ': ' . $this->response['error'];
 		}
 		return '';
 	}
 
+}
+
+class MailchimpException extends CakeException {
 }

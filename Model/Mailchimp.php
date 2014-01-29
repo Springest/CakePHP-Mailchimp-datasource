@@ -6,68 +6,50 @@ App::uses('HttpSocket', 'Network/Http');
 class Mailchimp extends MailchimpAppModel {
 
 	/**
-	 * Retrieve a list of all MailChimp API Keys for this User
-	 *
-	 * @section Security Related
-	 * @example xml-rpc_apikeyAdd.php
-	 * @example mcapi_apikeyAdd.php
-	 *
-	 * @param string $username Your MailChimp user name
-	 * @param string $password Your MailChimp password
-	 * @param boolean $expired optional - whether or not to include expired keys, defaults to false
-	 * @return array an array of API keys including:
-	 * @returnf string apikey The api key that can be used
-	 * @returnf string created_at The date the key was created
-	 * @returnf string expired_at The date the key was expired
-	 */
-	public function apiKeys($username, $password, $expired = false) {
-		return $this->Mailchimp->apikeys($username, $password, $expired);
-	}
-
-	/**
-	 * Add an API Key to your account. We will generate a new key for you and return it.
-	 *
-	 * @section Security Related
-	 * @example xml-rpc_apikeyAdd.php
-	 *
-	 * @param string $username Your MailChimp user name
-	 * @param string $password Your MailChimp password
-	 * @return string a new API Key that can be immediately used.
-	 */
-	public function apikeyAdd($username, $password) {
-		return $this->Mailchimp->apikeyAdd($username, $password);
-	}
-
-	/**
-	 * Expire a Specific API Key. Note that if you expire all of your keys, just visit <a href="http://admin.mailchimp.com/account/api" target="_blank">your API dashboard</a>
-	 * to create a new one. If you are trying to shut off access to your account for an old developer, change your
-	 * MailChimp password, then expire all of the keys they had access to. Note that this takes effect immediately, so make
-	 * sure you replace the keys in any working application before expiring them! Consider yourself warned...
-	 *
-	 * @section Security Related
-	 * @example mcapi_apikeyExpire.php
-	 * @example xml-rpc_apikeyExpire.php
-	 *
-	 * @param string $username Your MailChimp user name
-	 * @param string $password Your MailChimp password
-	 * @return boolean true if it worked, otherwise an error is thrown.
-	 */
-	public function apikeyExpire($username, $password) {
-		return $this->Mailchimp->apikeyExpire($username, $password);
-	}
-
-	/**
 	 * "Ping" the MailChimp API - a simple method you can call that will return a constant value as long as everything is good. Note
 	 * than unlike most all of our methods, we don't throw an Exception if we are having issues. You will simply receive a different
 	 * string back that will explain our view on what is going on.
 	 *
-	 * @section Helper
-	 * @example xml-rpc_ping.php
-	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/ping.php
+
 	 * @return string returns "Everything's Chimpy!" if everything is chimpy, otherwise returns an error message
 	 */
 	public function ping() {
-		return $this->Mailchimp->ping();
+		return $this->call('helper/ping');
+	}
+
+	/**
+	 * Mailchimp::generateText()
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/generate-text.php
+	 *
+	 * @param mixed $type
+	 * @param mixed $content
+	 * @return array
+	 */
+	public function generateText($type, array $content) {
+		$options = array(
+			'type' => $type,
+			'content' => $content
+		);
+		return $this->call('helper/generate-text', $options);
+	}
+
+	/**
+	 * Mailchimp::generateText()
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/inline-css.php
+	 *
+	 * @param mixed $type
+	 * @param mixed $content
+	 * @return array
+	 */
+	public function inlineCss($html, $stripCss = true) {
+		$options = array(
+			'html' => $html,
+			'strip_css' => $stripCss
+		);
+		return $this->call('helper/inline-css', $options);
 	}
 
 	/**
@@ -144,7 +126,10 @@ class Mailchimp extends MailchimpAppModel {
 	 * string order_desc the order description
 	 */
 	public function getAccountDetails(array $exclude = array()) {
-		return $this->Mailchimp->getAccountDetails($exclude);
+		$options = array(
+			'exclude' => $exclude
+		);
+		return $this->call('helper/account-details', $options);
 	}
 
 	/**
@@ -158,45 +143,94 @@ class Mailchimp extends MailchimpAppModel {
 	 * string email the email address used for verification
 	 */
 	public function getVerifiedDomains() {
-		return $this->Mailchimp->getVerifiedDomains();
+		return $this->call('helper/verified-domains');
 	}
 
 	/**
-	 * Get the most recent 100 activities for particular list members (open, click, bounce, unsub, abuse, sent to)
+	 * Get all of the list members for a list that are of a particular status. Are you trying to get a dump including lots of merge
+	 * data or specific members of a list? If so, checkout the <a href="/export">Export API</a>
 	 *
-	 * @section List Related
-	 *
-	 * @param string $id the list id to connect to. Get by calling lists()
-	 * @param array $emailAddress an array of up to 50 email addresses to get information for OR the "id"(s) for the member returned from listMembers, Webhooks, and Campaigns.
-	 * @return array array of data and success/error counts
-	 * int success the number of subscribers successfully found on the list
-	 * int errors the number of subscribers who were not found on the list
-	 * array data an array of arrays where each activity record has:
-	 * string action The action name, one of: open, click, bounce, unsub, abuse, sent, queued, ecomm, mandrill_send, mandrill_hard_bounce, mandrill_soft_bounce, mandrill_open, mandrill_click, mandrill_spam, mandrill_unsub, mandrill_reject
-	 * string timestamp The date/time of the action
-	 * string url For click actions, the url clicked, otherwise this is empty
-	 * string type If there's extra bounce, unsub, etc data it will show up here.
-	 * string bounce_type For backwards compat, this will exist and be the same data as "type"
-	 * string campaign_id The campaign id the action was related to, if it exists - otherwise empty (ie, direct unsub from list)
+	 * @param array $options
+	 * - id
+	 * - status to get members for - one of(subscribed, unsubscribed, <a target="_blank" href="http://eepurl.com/gWOO">cleaned</a>, updated), defaults to subscribed
+	 * @param array $filterOptions
+	 * - start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * - limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 15000
+	 * - sortField
+	 * - sortDir
+	 * - segment
+	 * @return array Array of a the total records match and matching list member data for this page (see Returned Fields for details)
+	 * int total the total matching records
+	 * array data the data for each member, including:
+	 * string email Member email address
+	 * date timestamp timestamp of their associated status date (subscribed, unsubscribed, cleaned, or updated) in GMT
+	 * string reason For unsubscribes only - the reason collected for the unsubscribe. If populated, one of 'NORMAL','NOSIGNUP','INAPPROPRIATE','SPAM','OTHER'
+	 * string reason_text For unsubscribes only - if the reason is OTHER, the text entered.
 	 */
-	public function listMemberActivity($emailAddress, $id = null) {
-		if (!$id) {
-			$id = $this->settings['defaultListId'];
-		}
-		return $this->Mailchimp->listMemberActivity($id, $emailAddress);
+	public function listMembers(array $options, array $filterOptions = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId'],
+			'status' => 'subscribed',
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('lists/members', $options);
 	}
 
 	/**
-	 * Get all email addresses that complained about a given campaign
+	 * Search account wide or on a specific list using the specified query terms
 	 *
-	 * @section List Related
+	 * @param string $query terms to search on, <a href="http://kb.mailchimp.com/article/i-cant-find-a-recipient-on-my-list" target="_blank">just like you do in the app</a>
+	 * @param array
+	 * - id: optional the list id to limit the search to. Get by calling lists()
+	 * - offset: optional the paging offset to use if more than 100 records match
+	 * @return array An array of both exact matches and partial matches over a full search
+	 * array exact_matches
+	 * int total total members matching
+	 * array members each entry will match the data format for a single member as returned by listMemberInfo()
+	 * array full_search
+	 * int total total members matching
+	 * array members each entry will match the data format for a single member as returned by listMemberInfo()
+	 */
+	public function search($query, array $options = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId'],
+		);
+		$options += $defaults;
+		$options['query'] = $query;
+		return $this->call('helper/search-members', $options);
+	}
+
+	/**
+	 * Retrieve all List Ids a member is subscribed to.
 	 *
-	 * @example mcapi_listAbuseReports.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/lists-for-email.php
 	 *
-	 * @param string $id the list id to pull abuse reports for (can be gathered using lists())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
-	 * @param string $since optional pull only messages since this time - 24 hour format in <strong>GMT</strong>, eg "2013-12-30 20:30:00"
+	 * @param string $email the email address to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns
+	 * @return array An array of list_ids the member is subscribed to.
+	 */
+	public function listsForEmail($email) {
+		if (is_string($email)) {
+			$email = array(
+				'email' => $email
+			);
+		}
+		$options = array(
+			'email' => $email
+		);
+		return $this->call('helper/lists-for-email', $options);
+	}
+
+	/**
+	 * Get all email addresses that complained about a given campaign sent to a list.
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/abuse-reports.php
+	 *
+	 * @param array $options
+	 * - $id the list id to pull abuse reports for (can be gathered using lists())
+	 * - integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * - integer $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
+	 * - string $since optional pull only messages since this time - 24 hour format in <strong>GMT</strong>, eg "2013-12-30 20:30:00"
 	 * @return array the total of all reports and the specific reports reports this page
 	 * int total the total number of matching abuse reports
 	 * array data the actual data for each reports, including:
@@ -205,40 +239,42 @@ class Mailchimp extends MailchimpAppModel {
 	 * string campaign_id the unique id for the campaign that report was made against
 	 * string type an internal type generally specifying the orginating mail provider - may not be useful outside of filling report views
 	 */
-	public function listAbuseReports($start = 0, $limit = 500, $since = null, $id = null) {
-		if (!$id) {
-			$id = $this->settings['defaultListId'];
-		}
-		return $this->Mailchimp->listAbuseReports($id, $start, $limit, $since);
+	public function listAbuseReports(array $options = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId']
+		);
+		$options += $defaults;
+		return $this->call('lists/abuse-reports', $options);
 	}
 
 	/**
 	 * Access the Growth History by Month for a given list.
 	 *
-	 * @section List Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/growth-history.php
 	 *
-	 * @example mcapi_listGrowthHistory.php
-	 *
-	 * @param string $id the list id to connect to. Get by calling lists()
+	 * @param array $options
+	 * - $id the list id to connect to. Get by calling lists()
 	 * @return array array of months and growth
 	 * string month The Year and Month in question using YYYY-MM format
 	 * int existing number of existing subscribers to start the month
 	 * int imports number of subscribers imported during the month
 	 * int optins number of subscribers who opted-in during the month
 	 */
-	public function listGrowthHistory($id = null) {
-		if (!$id) {
-			$id = $this->settings['defaultListId'];
-		}
-		return $this->Mailchimp->listGrowthHistory($id);
+	public function listGrowthHistory(array $options = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId']
+		);
+		$options += $defaults;
+		return $this->call('lists/growth-history', $options);
 	}
 
 	/**
 	 * Access up to the previous 180 days of daily detailed aggregated activity stats for a given list
 	 *
-	 * @section List Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/activity.php
 	 *
-	 * @param string $id the list id to connect to. Get by calling lists()
+	 * @param array $options
+	 * -  $id the list id to connect to. Get by calling lists()
 	 * @return array array of array of daily values, each containing:
 	 * string day The day in YYYY-MM-DD
 	 * int emails_sent number of emails sent to the list
@@ -252,17 +288,18 @@ class Mailchimp extends MailchimpAppModel {
 	 * int other_adds number of non-double optin subscribes for the list (manual, API, or import)
 	 * int other_removes number of non-manual unsubscribes for the list (deletions, empties, soft-bounce removals)
 	 */
-	public function listActivity($id = null) {
-		if (!$id) {
-			$id = $this->settings['defaultListId'];
-		}
-		return $this->Mailchimp->listActivity($id);
+	public function listActivity(array $options = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId']
+		);
+		$options += $defaults;
+		return $this->call('lists/activity', $options);
 	}
 
 	/**
 	 * Retrieve the locations (countries) that the list's subscribers have been tagged to based on geocoding their IP address
 	 *
-	 * @section List Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/locations.php
 	 *
 	 * @param string $id the list id to connect to. Get by calling lists()
 	 * @return array array of locations
@@ -271,11 +308,12 @@ class Mailchimp extends MailchimpAppModel {
 	 * double percent the percent of subscribers in the country
 	 * double total the total number of subscribers in the country
 	 */
-	public function listLocations($id = null) {
-		if (!$id) {
-			$id = $this->settings['defaultListId'];
-		}
-		return $this->Mailchimp->listLocations($id);
+	public function listLocations(array $options = array()) {
+		$defaults = array(
+			'id' => $this->settings['defaultListId']
+		);
+		$options += $defaults;
+		return $this->call('lists/locations', $options);
 	}
 
 }

@@ -5,112 +5,190 @@ App::uses('MailchimpAppModel', 'Mailchimp.Model');
 class MailchimpCampaign extends MailchimpAppModel {
 
 	/**
+	 * Get the most recent 100 activities for particular list members (open, click, bounce, unsub, abuse, sent to)
+	 *
+	 *
+	 * @param array $emails An array of up to 50 email addresses to get information for OR the "id"(s) for the member returned from listMembers, Webhooks, and Campaigns.
+	 * @param array $options
+	 * - id
+	 * @return array array of data and success/error counts
+	 * int success the number of subscribers successfully found on the list
+	 * int errors the number of subscribers who were not found on the list
+	 * array data an array of arrays where each activity record has:
+	 * string action The action name, one of: open, click, bounce, unsub, abuse, sent, queued, ecomm, mandrill_send, mandrill_hard_bounce, mandrill_soft_bounce, mandrill_open, mandrill_click, mandrill_spam, mandrill_unsub, mandrill_reject
+	 * string timestamp The date/time of the action
+	 * string url For click actions, the url clicked, otherwise this is empty
+	 * string type If there's extra bounce, unsub, etc data it will show up here.
+	 * string bounce_type For backwards compat, this will exist and be the same data as "type"
+	 * string campaign_id The campaign id the action was related to, if it exists - otherwise empty (ie, direct unsub from list)
+	 */
+	public function listMemberActivity(array $emails, array $options = array()) {
+		foreach ($emails as $key => $email) {
+			if (is_string($email)) {
+				$email = array(
+					'email' => $email
+				);
+			}
+			$emails[$key] = $email;
+		}
+		$defaults = array(
+			'id' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+
+		return $this->call('reports/member-activity', $options);
+	}
+
+	/**
+	 * Retrieve all Campaigns Ids a member was sent
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/campaigns-for-email.php
+	 *
+	 * @param array $emails
+	 * @param array $options
+	 * @return array
+	 */
+	public function campaignsForEmail(array $emails, array $options = array()) {
+		foreach ($emails as $key => $email) {
+			if (is_string($email)) {
+				$email = array(
+					'email' => $email
+				);
+			}
+			$emails[$key] = $email;
+		}
+		$options = array(
+			'email' => $emails,
+			'options' => $options
+		);
+		return $this->call('helper/campaigns-for-email', $options);
+	}
+
+	/**
 	 * Get the list of campaigns and their details matching the specified filters
 	 *
-	 * @section Campaign  Related
-	 * @example mcapi_campaigns.php
-	 * @example xml-rpc_campaigns.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/list.php
 	 *
 	 * @param array $filters a hash of filters to apply to this query - all are optional:
-	 * @param integer $start optional - control paging of campaigns, start results at this campaign #, defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional - control paging of campaigns, number of campaigns to return with each call, defaults to 25 (max=1000)
+	 * - campaign_id
+	 * - list_id
+	 * - template_id
+	 * ...
+	 * @param array $options
+	 * - $start optional - control paging of campaigns, start results at this campaign #, defaults to 1st page of data  (page 0)
+	 * - $limit optional - control paging of campaigns, number of campaigns to return with each call, defaults to 25 (max=1000)
 	 * @return array an array containing a count of all matching campaigns and the specific ones for the current page (see Returned Fields for description)
-	 * @returnf int total the total number of campaigns matching the filters passed in
-	 * @returnf array data the data for each campaign being returned
 	 */
-	public function campaigns($filters = array(), $start = 0, $limit = 25) {
-		return $this->Mailchimp->campaigns($filters, $start, $limit);
+	public function campaigns($filters = array(), $options = array()) {
+		$options['filters'] = $filters;
+		return $this->call('campaigns/list', $options);
 	}
 
 	/**
 	 * Search all campaigns for the specified query terms
 	 *
-	 * @section Helper
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/search-campaigns.php
 	 *
 	 * @param string $query terms to search on
-	 * @param integer offset optional the paging offset to use if more than 100 records match
-	 * @param string snip_start optional by default clear text is returned. To have the match highlighted with something (like a strong HTML tag), <strong>both</strong> this and "snip_end" must be passed. You're on your own to not break the tags - 25 character max.
-	 * @param string snip_end optional see "snip_start" above.
+	 * @param array $options
+	 * - integer offset optional the paging offset to use if more than 100 records match
+	 * - string snip_start optional by default clear text is returned. To have the match highlighted with something (like a strong HTML tag), <strong>both</strong> this and "snip_end" must be passed. You're on your own to not break the tags - 25 character max.
+	 * - string snip_end optional see "snip_start" above.
 	 * @return array An array containing the total matches and current results
 	 * int total total campaigns matching
 	 * array results matching campaigns and snippets
 	 * string snippet the matching snippet for the campaign
 	 * array campaign the matching campaign's details - will return same data as single campaign from campaigns()
 	 */
-	public function search($query, $offset = 0, $snipStart = null, $snipEnd = null) {
-		return $this->Mailchimp->searchCampaigns($query, $offset, $snipStart, $snipEnd);
-	}
-
-	/**
-	 * Unschedule a campaign that is scheduled to be sent in the future
-	 *
-	 * @section Campaign  Related
-	 * @example mcapi_campaignUnschedule.php
-	 * @example xml-rpc_campaignUnschedule.php
-	 *
-	 * @param string $cid the id of the campaign to unschedule
-	 * @return boolean true on success
-	 */
-	public function campaignUnschedule($cid = null) {
-		if (!$cid) {
-			$cid = $this->settings['defaultCampaignId'];
-		}
-		return $this->Mailchimp->campaignUnschedule($cid);
+	public function search($query, array $options = array()) {
+		$options['query'] = $query;
+		return $this->call('helper/search-campaigns', $options);
 	}
 
 	/**
 	 * Schedule a campaign to be sent in the future
 	 *
-	 * @section Campaign  Related
-	 * @example mcapi_campaignSchedule.php
-	 * @example xml-rpc_campaignSchedule.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/schedule.php
 	 *
 	 * @param string $cid the id of the campaign to schedule
 	 * @param string $scheduleTime the time to schedule the campaign. For A/B Split "schedule" campaigns, the time for Group A - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @param string $scheduleTimeB optional -the time to schedule Group B of an A/B Split "schedule" campaign - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return boolean true on success
 	 */
-	public function campaignSchedule($cid, $scheduleTime, $scheduleTimeB = null) {
-		return $this->Mailchimp->campaignSchedule($cid, $scheduleTime, $scheduleTimeB);
+	public function campaignSchedule(array $options) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId'],
+			'scheduleTime' => date('Y-m-d H:i:s'),
+			'scheduleTimeB' => null,
+		);
+		$options += $defaults;
+		return $this->call('campaigns/schedule', $options);
 	}
 
 	/**
-	 * Resume sending an AutoResponder or RSS campaign
+	 * Unschedule a campaign that is scheduled to be sent in the future
 	 *
-	 * @section Campaign  Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/unschedule.php
 	 *
-	 * @param string $cid the id of the campaign to pause
+	 * @param array $options
+	 * - $cid the id of the campaign to unschedule
 	 * @return boolean true on success
 	 */
-	public function campaignResume($cid) {
-		return $this->Mailchimp->campaignResume($cid);
+	public function campaignUnschedule(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/unschedule', $options);
 	}
 
 	/**
 	 * Pause an AutoResponder orRSS campaign from sending
 	 *
-	 * @section Campaign  Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/pause.php
 	 *
 	 * @param string $cid the id of the campaign to pause
 	 * @return boolean true on success
 	 */
-	public function campaignPause($cid) {
-		return $this->Mailchimp->campaignPause($cid);
+	public function campaignPause(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/pause', $options);
 	}
+
+	/**
+	 * Resume sending an AutoResponder or RSS campaign
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/resume.php
+	 *
+	 * @param string $cid the id of the campaign to pause
+	 * @return boolean true on success
+	 */
+	public function campaignResume(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/resume', $options);
+	}
+
 
 	/**
 	 * Send a given campaign immediately. For RSS campaigns, this will "start" them.
 	 *
-	 * @section Campaign  Related
-	 *
-	 * @example mcapi_campaignSendNow.php
-	 * @example xml-rpc_campaignSendNow.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/send.php
 	 *
 	 * @param string $cid the id of the campaign to send
 	 * @return boolean true on success
 	 */
-	public function campaignSendNow($cid) {
-		return $this->Mailchimp->campaignSendNow($cid);
+	public function campaignSend(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/send', $options);
 	}
 
 	/**
@@ -121,100 +199,118 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @param string $cid the id of the campaign to test
 	 * @return boolean true on success
 	 */
-	public function campaignSendTest(array $testEmails = array(), $sendType = null, $cid = null) {
-		if (!$cid) {
-			$cid = $this->settings['defaultCampaignId'];
-		}
-		return $this->Mailchimp->campaignSendTest($cid, $testEmails, $sendType);
+	public function campaignSendTest(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/send-test', $options);
 	}
 
 	/**
 	 * Allows one to test their segmentation rules before creating a campaign using them
 	 *
-	 * @section Campaign  Related
-	 * @example mcapi_campaignSegmentTest.php
-	 * @example xml-rpc_campaignSegmentTest.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/segment-test.php
 	 *
 	 * @param string $listId the list to test segmentation on - get lists using lists()
 	 * @param array $options with 2 keys:
 	 * @return integer total The total number of subscribers matching your segmentation options
 	 */
-	public function campaignSegmentTest($listId, array $options) {
-		return $this->Mailchimp->campaignSegmentTest($listId, $options);
+	public function campaignSegmentTest(array $campaignOptions, array $options = array()) {
+		$defaults = array(
+			'listId' => $this->settings['defaultListId']
+		);
+		$options += $defaults;
+		$options['options'] = $campaignOptions;
+		return $this->call('campaigns/segment-test', $options);
 	}
 
 	/**
 	 * Create a new draft campaign to send. You <strong>can not</strong> have more than 32,000 campaigns in your account.
 	 *
-	 * @section Campaign  Related
-	 * @example mcapi_campaignCreate.php
-	 * @example xml-rpc_campaignCreate.php
-	 * @example xml-rpc_campaignCreateABSplit.php
-	 * @example xml-rpc_campaignCreateRss.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/create.php
 	 *
 	 * @param string $type the Campaign Type to create - one of "regular", "plaintext", "absplit", "rss", "trans", "auto"
 	 * @param array $options a hash of the standard options for this campaign :     *
+	 * @param array $content
+	 * @param array $segmentOpts
 	 * @return string the ID for the created campaign
 	 */
-	public function campaignCreate($type, array $options, $content, array $segmentOpts = null, array $typeOpts = null) {
-		return $this->Mailchimp->campaignCreate($type, $options, $content, $segmentOpts, $typeOpts);
+	public function campaignCreate($type, array $campaignOptions, array $content, array $segmentOpts = array(), array $typeOpts = array()) {
+		$defaults = array(
+			'list_id' => $this->settings['defaultListId']
+		);
+		$campaignOptions += $defaults;
+
+		$options = array(
+			'options' => $campaignOptions
+		);
+		$options['content'] = $content;
+		$options['segment_opts'] = $segmentOpts;
+		$options['type_opts'] = $typeOpts;
+		return $this->call('campaigns/create', $options);
 	}
 
-	/** Update just about any setting for a campaign that has <em>not</em> been sent. See campaignCreate() for details.
+	/**
+	 * Update just about any setting for a campaign that has <em>not</em> been sent. See campaignCreate() for details.
 	 *
 	 *  Caveats:<br/><ul>
 	 *        <li>If you set list_id, all segmentation options will be deleted and must be re-added.</li>
 	 *        <li>If you set template_id, you need to follow that up by setting it's 'content'</li>
 	 *        <li>If you set segment_opts, you should have tested your options against campaignSegmentTest() as campaignUpdate() will not allow you to set a segment that includes no members.</li></ul>
-	 * @section Campaign  Related
 	 *
-	 * @example mcapi_campaignUpdate.php
-	 * @example mcapi_campaignUpdateAB.php
-	 * @example xml-rpc_campaignUpdate.php
-	 * @example xml-rpc_campaignUpdateAB.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/update.php
 	 *
-	 * @param string $cid the Campaign Id to update
-	 * @param string $name the parameter name ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's name (subject, from_email, etc.). Additional parameters will be that option name  (content, segment_opts). "type_opts" will be the name of the type - rss, auto, trans, etc.
-	 * @param mixed  $value an appropriate value for the parameter ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's value. For additional parameters, this is the same value passed to them.
+	 * @param array $options
+	 * - $cid the Campaign Id to update
+	 * - string $name the parameter name ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's name (subject, from_email, etc.). Additional parameters will be that option name  (content, segment_opts). "type_opts" will be the name of the type - rss, auto, trans, etc.
+	 * - mixed $value an appropriate value for the parameter ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's value. For additional parameters, this is the same value passed to them.
 	 * @return boolean true if the update succeeds, otherwise an error will be thrown
 	 */
-	public function campaignUpdate($cid, $name, $value) {
-		return $this->Mailchimp->campaignUpdate($cid, $name, $value);
+	public function campaignUpdate(array $options) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/update', $options);
 	}
 
-	/** Replicate a campaign.
+	/**
+	 * Replicate a campaign.
 	 *
-	 * @section Campaign  Related
-	 *
-	 * @example mcapi_campaignReplicate.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/replicate.php
 	 *
 	 * @param string $cid the Campaign Id to replicate
 	 * @return string the id of the replicated Campaign created, otherwise an error will be thrown
 	 */
-	public function campaignReplicate($cid) {
-		return $this->Mailchimp->campaignReplicate($cid);
+	public function campaignReplicate(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/replicate', $options);
 	}
 
-	/** Delete a campaign. Seriously, "poof, gone!" - be careful!
+	/**
+	 * Delete a campaign. Seriously, "poof, gone!" - be careful!
 	 *
-	 * @section Campaign  Related
-	 *
-	 * @example mcapi_campaignDelete.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/delete.php
 	 *
 	 * @param string $cid the Campaign Id to delete
 	 * @return boolean true if the delete succeeds, otherwise an error will be thrown
 	 */
-	public function campaignDelete($cid) {
-		return $this->Mailchimp->campaignDelete($cid);
+	public function campaignDelete(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/delete', $options);
 	}
 
 	/**
 	 * Given a list and a campaign, get all the relevant campaign statistics (opens, bounces, clicks, etc.)
 	 *
-	 * @section Campaign  Stats
-	 *
-	 * @example mcapi_campaignStats.php
-	 * @example xml-rpc_campaignStats.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/summary.php
 	 *
 	 * @param string $cid the campaign id to pull stats for (can be gathered using campaigns())
 	 * @return array struct of the statistics for this campaign
@@ -235,25 +331,48 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int emails_sent Number of email addresses campaign was sent to.
 	 * @returnf array absplit If this was an absplit campaign, stats for the A and B groups will be returned
 	 */
-	public function campaignStats($cid) {
-		return $this->Mailchimp->campaignStats($cid);
+	public function campaignStats(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/summary', $options);
+	}
+
+	/**
+	 * The urls tracked and their click counts for a given campaign.
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/click-detail.php
+	 *
+	 * @param array $options
+	 * - cid
+	 * @return struct urls will be keys and contain their associated statistics:
+	 */
+	public function campaignClicks(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/clicks', $options);
 	}
 
 	/**
 	 * Get an array of the urls being tracked, and their click counts for a given campaign
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/click-detail.php
 	 *
-	 * @example mcapi_campaignClickStats.php
-	 * @example xml-rpc_campaignClickStats.php
-	 *
-	 * @param string $cid the campaign id to pull stats for (can be gathered using campaigns())
+	 * @param array $options
+	 * - tid: the "tid" for the URL from reports/clicks
 	 * @return struct urls will be keys and contain their associated statistics:
-	 * @returnf int clicks Number of times the specific link was clicked
-	 * @returnf int unique Number of unique people who clicked on the specific link
 	 */
-	public function campaignClickStats($cid) {
-		return $this->Mailchimp->campaignClickStats($cid);
+	public function campaignClickDetails($tid, array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['tid'] = $tid;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/click-detail', $options);
 	}
 
 	/**
@@ -280,14 +399,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int clicks_pct Percentage of clicks from this domain (whole number)
 	 * @returnf int unsubs_pct Percentage of unsubs from this domain (whole number)
 	 */
-	public function campaignEmailDomainPerformance($cid) {
-		return $this->Mailchimp->campaignEmailDomainPerformance($cid);
+	public function campaignEmailDomainPerformance(array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/domain-performance', $options);
 	}
 
 	/**
 	 * Get all email addresses the campaign was successfully sent to (ie, no bounces)
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/sent-to.php
 	 *
 	 * @param string $cid the campaign id to pull members for (can be gathered using campaigns())
 	 * @param string $status optional the status to pull - one of 'sent', 'hard' (bounce), or 'soft' (bounce). By default, all records are returned
@@ -297,50 +421,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int total   the total number of members for the campaign and status
 	 * @returnf array data  the full campaign member records
 	 */
-	public function campaignMembers($cid, $status = null, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignMembers($cid, $status, $start, $limit);
-	}
-
-	/**
-	 * <strong>DEPRECATED</strong> Get all email addresses with Hard Bounces for a given campaign
-	 *
-	 * @deprecated See campaignMembers() for a replacement
-	 *
-	 * @section Campaign  Stats
-	 *
-	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
-	 * @return array a total of all hard bounced emails and the specific emails for this page
-	 * @returnf int total   the total number of hard bounces for the campaign
-	 * @returnf array data  the full email addresses that bounced
-	 */
-	public function campaignHardBounces($cid, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignHardBounces($cid, $start, $limit);
-	}
-
-	/**
-	 * <strong>DEPRECATED</strong> Get all email addresses with Soft Bounces for a given campaign
-	 *
-	 * @deprecated See campaignMembers() for a replacement
-	 *
-	 * @section Campaign  Stats
-	 *
-	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
-	 * @return array a total of all soft bounced emails and the specific emails for this page
-	 * @returnf int total   the total number of soft bounces for the campaign
-	 * @returnf array data the full email addresses that bounced
-	 */
-	public function campaignSoftBounces($cid, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignSoftBounces($cid, $start, $limit);
+	public function campaignSentTo(array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/domain-performance', $options);
 	}
 
 	/**
 	 * Get all unsubscribed email addresses for a given campaign
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/unsubscribes.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
@@ -350,16 +443,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int total   the total number of unsubscribes for the campaign
 	 * @returnf array data  the full email addresses that unsubscribed
 	 */
-	public function campaignUnsubscribes($cid, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignUnsubscribes($cid, $start, $limit);
+	public function campaignUnsubscribes(array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/unsubscribes', $options);
 	}
 
 	/**
 	 * Get all email addresses that complained about a given campaign
 	 *
-	 * @section Campaign  Stats
-	 *
-	 * @example mcapi_campaignAbuseReports.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/abuse.php
 	 *
 	 * @param string $cid the campaign id to pull abuse reports for (can be gathered using campaigns())
 	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
@@ -370,33 +466,38 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf string email the email address that reported abuse
 	 * @returnf string type an internal type generally specifying the orginating mail provider - may not be useful outside of filling report views
 	 */
-	public function campaignAbuseReports($cid, $since = null, $start = 0, $limit = 500) {
-		return $this->Mailchimp->campaignAbuseReports($cid, $since, $start, $limit);
+	public function campaignAbuseReports(array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/abuse', $options);
 	}
 
 	/**
 	 * Retrieve the text presented in our app for how a campaign performed and any advice we may have for you - best
 	 * suited for display in customized reports pages. Note: some messages will contain HTML - clean tags as necessary
 	 *
-	 * @section Campaign  Stats
-	 *
-	 * @example mcapi_campaignAdvice.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/advice.php
 	 *
 	 * @param string $cid the campaign id to pull advice text for (can be gathered using campaigns())
 	 * @return array advice on the campaign's performance
 	 * @returnf msg the advice message
 	 * @returnf type the "type" of the message. one of: negative, positive, or neutral
 	 */
-	public function campaignAdvice($cid) {
-		return $this->Mailchimp->campaignAdvice($cid);
+	public function campaignAdvice(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/advice', $options);
 	}
 
 	/**
 	 * Retrieve the Google Analytics data we've collected for this campaign. Note, requires Google Analytics Add-on to be installed and configured.
 	 *
-	 * @section Campaign  Stats
-	 *
-	 * @example mcapi_campaignAnalytics.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/google-analytics.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @return array analytics we've collected for the passed campaign.
@@ -412,14 +513,18 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int ecomm_conversions number Ecommerce transactions tracked
 	 * @returnf array goals an array containing goal names and number of conversions
 	 */
-	public function campaignAnalytics($cid) {
-		return $this->Mailchimp->campaignAnalytics($cid);
+	public function campaignAnalytics(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/google-analytics', $options);
 	}
 
 	/**
 	 * Retrieve the countries and number of opens tracked for each. Email address are not returned.
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/geo-opens.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @return array countries an array of countries where opens occurred
@@ -428,24 +533,12 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int opens The total number of opens that occurred in the country
 	 * @returnf bool region_detail Whether or not a subsequent call to campaignGeoOpensByCountry() will return anything
 	 */
-	public function campaignGeoOpens($cid) {
-		return $this->Mailchimp->campaignGeoOpens($cid);
-	}
-
-	/**
-	 * Retrieve the regions and number of opens tracked for a certain country. Email address are not returned.
-	 *
-	 * @section Campaign  Stats
-	 *
-	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param string $code An ISO3166 2 digit country code
-	 * @return array regions an array of regions within the provided country where opens occurred.
-	 * @returnf string code An internal code for the region. When this is blank, it indicates we know the country, but not the region
-	 * @returnf string name The name of the region, if we have one. For blank "code" values, this will be "Rest of Country"
-	 * @returnf int opens The total number of opens that occurred in the country
-	 */
-	public function campaignGeoOpensForCountry($cid, $code) {
-		return $this->Mailchimp->campaignGeoOpensForCountry($cid, $code);
+	public function campaignGeoOpens(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/geo-opens', $options);
 	}
 
 	/**
@@ -457,15 +550,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @return array stats an array containing tweets, retweets, clicks, and referrer related to using the campaign's eepurl
 	 * @returnf array twitter various Twitter related stats
 	 */
-	public function campaignEepUrlStats($cid) {
-		return $this->Mailchimp->campaignEepUrlStats($cid);
+	public function campaignEepUrlStats(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('reports/eepurl', $options);
 	}
 
 	/**
 	 * Retrieve the most recent full bounce message for a specific email address on the given campaign.
 	 * Messages over 30 days old are subject to being removed
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/bounce-message.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @param string $email the email address or unique id of the member to pull a bounce message for.
@@ -474,8 +571,16 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf string email the email address that bounced
 	 * @returnf string message the entire bounce message received
 	 */
-	public function campaignBounceMessage($cid, $email) {
-		return $this->Mailchimp->campaignBounceMessage($cid, $email);
+	public function campaignBounceMessage($email, array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		if (is_string($email)) {
+			$email = array('email' => $email);
+		}
+		$options['email'] = $email;
+		return $this->call('reports/bounce-message', $options);
 	}
 
 	/**
@@ -483,9 +588,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * of data depending on how large the campaign was and how much cruft the bounce provider returned. Also,
 	 * message over 30 days old are subject to being removed
 	 *
-	 * @section Campaign  Stats
-	 *
-	 * @example mcapi_campaignBounceMessages.php
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/bounce-messages.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
@@ -495,14 +598,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int total that total number of bounce messages for the campaign
 	 * @returnf array data an array containing the data for this page
 	 */
-	public function campaignBounceMessages($cid, $start = 0, $limit = 25, $since = null) {
-		return $this->Mailchimp->campaignBounceMessages($cid, $start, $limit, $since);
+	public function campaignBounceMessages(array $filterOptions, array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/bounce-messages', $options);
 	}
 
 	/**
 	 * Retrieve the Ecommerce Orders tracked by campaignEcommOrderAdd()
 	 *
-	 * @section Campaign  Stats
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/ecomm-orders.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
 	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
@@ -512,14 +620,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf int total the total matching orders
 	 * @returnf array data the actual data for each order being returned
 	 */
-	public function campaignEcommOrders($cid, $start = 0, $limit = 100, $since = null) {
-		return $this->Mailchimp->campaignEcommOrders($cid, $start, $limit, $since);
+	public function campaignEcommOrders(array $filterOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['opts'] = $filterOptions;
+		return $this->call('reports/ecomm-orders', $options);
 	}
 
 	/**
 	 * Get the URL to a customized <a href="http://eepurl.com/gKmL" target="_blank">VIP Report</a> for the specified campaign and optionally send an email to someone with links to it. Note subsequent calls will overwrite anything already set for the same campign (eg, the password)
 	 *
-	 * @section Campaign  Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/reports/share.php
 	 *
 	 * @param string $cid the campaign id to share a report for (can be gathered using campaigns())
 	 * @param array  $opts optional various parameters which can be used to configure the shared report
@@ -529,14 +642,19 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf string secure_url The URL to the shared report, including the password (good for loading in an IFRAME). For non-secure reports, this will not be returned
 	 * @returnf string password If secured, the password for the report, otherwise this field will not be returned
 	 */
-	public function campaignShareReport($cid, array $opts = array()) {
-		return $this->Mailchimp->campaignShareReport($cid, $opts);
+	public function campaignShareReport(array $compaignOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['options'] = $compaignOptions;
+		return $this->call('reports/share', $options);
 	}
 
 	/**
 	 * Get the content (both html and text) for a campaign either as it would appear in the campaign archive or as the raw, original content
 	 *
-	 * @section Campaign  Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/content.php
 	 *
 	 * @param string $cid the campaign id to get content for (can be gathered using campaigns())
 	 * @param boolean   $forArchive optional controls whether we return the Archive version (true) or the Raw version (false), defaults to true
@@ -544,121 +662,30 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @returnf string html The HTML content used for the campgain with merge tags intact
 	 * @returnf string text The Text content used for the campgain with merge tags intact
 	 */
-	public function campaignContent($cid, $forArchive = true) {
-		return $this->Mailchimp->campaignContent($cid, $forArchive);
+	public function campaignContent($compaignOptions = array(), array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		$options['options'] = $compaignOptions;
+		return $this->call('campaigns/content', $options);
 	}
 
 	/**
 	 * Get the HTML template content sections for a campaign. Note that this <strong>will</strong> return very jagged, non-standard results based on the template
 	 * a campaign is using. You only want to use this if you want to allow editing template sections in your applicaton.
 	 *
-	 * @section Campaign  Related
+	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/template-content.php
 	 *
 	 * @param string $cid the campaign id to get content for (can be gathered using campaigns())
 	 * @return array array containing all content section for the campaign -
 	 */
-	public function campaignTemplateContent($cid) {
-		return $this->Mailchimp->campaignTemplateContent($cid);
-	}
-
-	/**
-	 * Retrieve the list of email addresses that opened a given campaign with how many times they opened - note: this AIM function is free and does
-	 * not actually require the AIM module to be installed
-	 *
-	 * @section Campaign Report Data
-	 *
-	 * @param string $cid the campaign id to get opens for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
-	 * @return array array containing the total records matched and the specific records for this page
-	 * @returnf int total the total number of records matched
-	 * @returnf array data the actual opens data, including:
-	 */
-	public function campaignOpenedAIM($cid, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignOpenedAIM($cid, $start, $limit);
-	}
-
-	/**
-	 * Retrieve the list of email addresses that did not open a given campaign
-	 *
-	 * @section Campaign Report Data
-	 *
-	 * @param string $cid the campaign id to get no opens for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
-	 * @return array array containing the total records matched and the specific records for this page
-	 * @returnf int total the total number of records matched
-	 * @returnf array data the email addresses that did not open the campaign
-	 */
-	public function campaignNotOpenedAIM($cid, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignNotOpenedAIM($cid, $start, $limit);
-	}
-
-	/**
-	 * Return the list of email addresses that clicked on a given url, and how many times they clicked
-	 *
-	 * @section Campaign Report Data
-	 *
-	 * @param string $cid the campaign id to get click stats for (can be gathered using campaigns())
-	 * @param string $url the URL of the link that was clicked on
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
-	 * @return array array containing the total records matched and the specific records for this page
-	 * @returnf int total the total number of records matched
-	 * @returnf array data the email addresses that did not open the campaign
-	 */
-	public function campaignClickDetailAIM($cid, $url, $start = 0, $limit = 1000) {
-		return $this->Mailchimp->campaignClickDetailAIM($cid, $start, $limit);
-	}
-
-	/**
-	 * Given a campaign and email address, return the entire click and open history with timestamps, ordered by time
-	 *
-	 * @section Campaign Report Data
-	 *
-	 * @param string $cid the campaign id to get stats for (can be gathered using campaigns())
-	 * @param array $emailAddress an array of up to 50 email addresses to check OR the email "id" returned from listMemberInfo, Webhooks, and Campaigns. For backwards compatibility, if a string is passed, it will be treated as an array with a single element (will not work with XML-RPC).
-	 * @return array an array with the keys listed in Returned Fields below
-	 * @returnf int success the number of email address records found
-	 * @returnf int error the number of email address records which could not be found
-	 * @returnf array data arrays containing the actions (opens and clicks) that the email took, with timestamps
-	 */
-	public function campaignEmailStatsAIM($cid, $emailAddress) {
-		return $this->Mailchimp->campaignEmailStatsAIM($cid, $emailAddress);
-	}
-
-	/**
-	 * Given a campaign and correct paging limits, return the entire click and open history with timestamps, ordered by time,
-	 * for every user a campaign was delivered to.
-	 *
-	 * @section Campaign Report Data
-	 * @example mcapi_campaignEmailStatsAIMAll.php
-	 *
-	 * @param string $cid the campaign id to get stats for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 1000
-	 * @return array Array containing a total record count and data including the actions  (opens and clicks) for each email, with timestamps
-	 * @returnf int total the total number of records
-	 * @returnf array data each record with their details:
-	 */
-	public function campaignEmailStatsAIMAll($cid, $start = 0, $limit = 100) {
-		$params = array($cid);
-		$params["cid"] = $cid;
-		$params["start"] = $start;
-		$params["limit"] = $limit;
-		return $this->Mailchimp->campaignEmailStatsAIMAll($cid, $start, $limit);
-	}
-
-	/**
-	 * Attach Ecommerce Order Information to a Campaign. This will generall be used by ecommerce package plugins
-	 * <a href="/plugins/ecomm360.phtml">that we provide</a> or by 3rd part system developers.
-	 * @section Campaign  Related
-	 *
-	 * @param array $order an array of information pertaining to the order that has completed. Use the following keys:
-	 * @return boolean true if the data is saved, otherwise an error is thrown.
-	 */
-	public function campaignEcommOrderAdd(array $order) {
-		return $this->Mailchimp->campaignEcommOrderAdd($order);
+	public function campaignTemplateContent(array $options = array()) {
+		$defaults = array(
+			'cid' => $this->settings['defaultCampaignId']
+		);
+		$options += $defaults;
+		return $this->call('campaigns/template-content', $options);
 	}
 
 }
