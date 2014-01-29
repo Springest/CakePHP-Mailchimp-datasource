@@ -56,7 +56,7 @@ class Mailchimp extends MailchimpAppModel {
 	 * Retrieve lots of account information including payments made, plan info, some account stats, installed modules,
 	 * contact info, and more. No private information like Credit Card numbers is available.
 	 *
-	 * @section Helper
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/account-details.php
 	 *
 	 * @param array $exclude optional defaults to nothing for backwards compatibility. Allows controlling which extra arrays are returned since they can slow down calls. Valid keys are "modules", "orders", "rewards-credits", "rewards-inspections", "rewards-referrals", and "rewards-applied". Hint: "rewards-referrals" is typically the culprit. To avoid confusion, if data is excluded, the corresponding key <strong>will not be returned at all</strong>.
 	 * @return array containing the details for the account tied to this API Key
@@ -135,7 +135,7 @@ class Mailchimp extends MailchimpAppModel {
 	/**
 	 * Retrieve all domains verification records for an account
 	 *
-	 * @section Helper
+	 * @see http://apidocs.mailchimp.com/api/2.0/helper/verified-domains.php
 	 *
 	 * @return array records of domains verification has been attempted for
 	 * string domain the verified domain
@@ -144,6 +144,27 @@ class Mailchimp extends MailchimpAppModel {
 	 */
 	public function getVerifiedDomains() {
 		return $this->call('helper/verified-domains');
+	}
+
+	/**
+	 * Retrieve all of the lists defined for your user account
+	 *
+	 * @see http://apidocs.mailchimp.com/api/2.0/lists/list.php
+	 *
+	 * @param array $filters
+	 * - list_id
+	 * - list_name
+	 * ...
+	 * @param array $options
+	 * - start
+	 * - limit
+	 * - sortField
+	 * - sortDir
+	 * @return array
+	 */
+	public function lists($filters = array(), $options = array()) {
+		$options['filters'] = $filters;
+		return $this->call('lists/list', $options);
 	}
 
 	/**

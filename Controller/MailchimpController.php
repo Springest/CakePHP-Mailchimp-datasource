@@ -3,15 +3,12 @@ App::uses('MailchimpAppController', 'Mailchimp.Controller');
 
 class MailchimpController extends MailchimpAppController {
 
-	public $uses = array('Mailchimp.MailchimpSubscriber');
+	public $uses = array('Mailchimp.Mailchimp');
 
 	public $paginate = array();
 
 	public function beforeFilter() {
 		parent::beforeFilter();
-
-		App::import('Vendor', 'Mailchimp.mailchimp/MCAPI.class');
-		$this->Mailchimp = new MCAPI(Configure::read('Mailchimp.apiKey'));
 	}
 
 	/**
