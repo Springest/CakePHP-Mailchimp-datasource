@@ -7,7 +7,7 @@ class Mandrill_Messages {
 
     /**
      * Send a new transactional message through Mandrill
-     * @param struct $message the information on the message to send
+     * @param array $message the information on the message to send
      *     - html string the full HTML content to be sent
      *     - text string optional full text content to be sent
      *     - subject string the message subject
