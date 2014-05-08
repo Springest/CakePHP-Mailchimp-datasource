@@ -68,6 +68,14 @@ This will then throw a `MailchimpException` you can catch, log away and continue
 Possibly my Tools plugin for the admin backend (optional)
 
 
+## Mandrill
+This plugin now also contains some Mandrill API wrapper as well as MandrillTransport for sending it via CakeEmail.
+This requires
+
+	$config['Mandrill'] = array(
+		'apiKey' => 'YOUR_API_KEY',
+	);
+
 ## Disclaimer
 
 MIT Licence
