@@ -2,6 +2,8 @@
 
 App::uses('AbstractTransport', 'Network/Email');
 App::uses('HttpSocket', 'Network/Http');
+App::uses('File', 'Utility');
+App::uses('CakeLog', 'Log');
 
 /**
  * MandrillTransport
@@ -91,6 +93,9 @@ class MandrillTransport extends AbstractTransport {
 
 		// Parse mandrill results
 		$result = json_decode($returnMandrill, true);
+		if (!empty($this->_config['log'])) {
+			CakeLog::write('mandrill', print_r($result, true));
+		}
 
 		$headers = $this->_headersToString($this->_headers);
 
@@ -135,32 +140,75 @@ class MandrillTransport extends AbstractTransport {
 		$message['merge_vars'] = array();
 		$message['merge_vars'][] = array('rcpt' => $this->_headers['To'], 'vars' => $mergeVars);
 
-		$message['from_email'] = substr($this->_headers['From'], strpos($this->_headers['From'], '<') + 1, -1);
-		$message['from_name'] = trim(substr($this->_headers['From'], 0, strpos($this->_headers['From'], '<')));
-		$message['from_name'] = trim($message['from_name'], '"');
+		$message['from_email'] = trim($this->_headers['From'], '\'');
+		if (($pos = strpos($this->_headers['From'], '<')) !== false) {
+			$message['from_email'] = substr($message['from_email'], $pos + 1, -1);
+			$message['from_name'] = trim(substr($this->_headers['From'], 0, $pos));
+			$message['from_name'] = trim($message['from_name'], '"');
+		} else {
+			$message['from_name'] = $message['from_email'];
+		}
 
-		$email = substr($this->_headers['To'], strpos($this->_headers['To'], '<') + 1, -1);
-		$name = trim(substr($this->_headers['To'], 0, strpos($this->_headers['To'], '<')));
-		$name = trim($name, '"');
+		$email = trim($this->_headers['To'], '\'');
+		if (($pos = strpos($this->_headers['To'], '<')) !== false) {
+			$email = substr($email, $pos + 1, -1);
+			$name = trim(substr($this->_headers['To'], 0, $pos));
+			$name = trim($name, '"');
+		} else {
+			$name = $email;
+		}
 		$message['to'] = array(array('email' => $email, 'name' => $name));
 
 		$message['subject'] = mb_decode_mimeheader($this->_headers['Subject']);
 
+		$Reflection = new ReflectionProperty(get_class($this->_Email), '_attachments');
+		$Reflection->setAccessible(true);
+		$attachments = $Reflection->getValue($this->_Email);
+		$message['attachments'] = array();
+		$message['images'] = array();
+		foreach ($attachments as $filename => $attachment) {
+			$content = $this->_readFile($attachment['file']);
+			$type = substr($attachment['mimetype'], 0, strpos($attachment['mimetype'], ' '));
+			if (isset($attachment['contentId'])) {
+				$message['images'][] = array(
+					'type' => $type,
+					'name' => $attachment['contentId'],
+					'content' => $content
+				);
+			} else {
+				$message['attachments'][] = array(
+					'type' => $type,
+					'name' => $filename,
+					'content' => $content
+				);
+			}
+		}
+
 		if ($this->_Email->emailFormat() === 'html' || $this->_Email->emailFormat() === 'both') {
 			$Reflection = new ReflectionProperty(get_class($this->_Email), '_htmlMessage');
-      $Reflection->setAccessible(true);
-			$message['html'] = $Reflection->getValue($this->_Email); // $this->_Email->_htmlMessage;
+			$Reflection->setAccessible(true);
+			$message['html'] = $Reflection->getValue($this->_Email);
 		}
 
 		if ($this->_Email->emailFormat() === 'text' || $this->_Email->emailFormat() === 'both') {
 			$Reflection = new ReflectionProperty(get_class($this->_Email), '_textMessage');
 			$Reflection->setAccessible(true);
-			$message['text'] = $Reflection->getValue($this->_Email); //$this->_Email->_textMessage;
+			$message['text'] = $Reflection->getValue($this->_Email);
 		}
 
 		$json['message'] = $message;
-
 		return $json;
+	}
+
+	/**
+	 * Read the file contents and return a base64 version of the file contents.
+	 *
+	 * @param string $path The absolute path to the file to read.
+	 * @return string File contents in base64 encoding
+	 */
+	protected function _readFile($path) {
+		$File = new File($path);
+		return chunk_split(base64_encode($File->read()));
 	}
 
 }
