@@ -39,8 +39,8 @@ Add the `$mailchimp` datasource to `APP/Config/database.php`
 
 	public $mailchimp = array(
 		'datasource' => 'Mailchimp.MailchimpSubscriberSource',
-		'apikey' => 'YOUR_API_KEY',
-		'defaultListId' => 'YOUR_LIST_ID',
+		'apikey' => 'YOUR_API_KEY', // Optional, I prefer using Configure
+		'defaultListId' => 'YOUR_LIST_ID', // Optional, I prefer using Configure
 	);
 
 When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`,

@@ -24,11 +24,6 @@
 		"source" : "https://github.com/dereuromark/cakephp-mailchimp"
 	},
 	"extra" : {
-		"installer-paths" : {
-			"Plugin/Mailchimp/" : [
-				"dereuromark/cakephp-mailchimp"
-			]
-		},
 		"installer-name" : "Mailchimp"
 	}
 }
