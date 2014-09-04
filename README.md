@@ -10,13 +10,17 @@ It uses the current API version 2.0 from Mailchimp.
 
 Copy the plugin into the `APP/Plugin` folder and make sure it is loaded using `CakePlugin::loadAll()`, for example.
 
-Use the Configure class to set the API data (via APP/Config/config.php):
+Use the Configure class to set the API data (via `APP/Config/configs.php` etc):
 
 	$config['Mailchimp'] = array(
 		'apiKey' => 'YOUR_API_KEY',
 		'defaultListId' => 'YOUR_LIST_ID',
 		'defaultCampaignId => 'YOUR_CAMPAIGN_ID'
 	);
+
+Dont' forget to include that configs file in your `bootstrap.php`:
+
+	Configure::load('configs');
 
 ## Usage
 
