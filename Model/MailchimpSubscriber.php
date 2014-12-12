@@ -63,7 +63,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * - mc_location
 	 * - mc_language
 	 * - mc_notes
-	 * @return boolean Success
+	 * @return bool Success
 	 * @throws MailchimpException When length of merge var (10) is exceeded.
 	 */
 	public function subscribe(array $queryData, array $options = array(), array $mergeVars = array()) {
@@ -114,7 +114,7 @@ class MailchimpSubscriber extends MailchimpAppModel {
 	 * - deleteMember
 	 * - sendGoodbye
 	 * - sendNotify
-	 * @return boolean Success
+	 * @return bool Success
 	 */
 	public function unsubscribe(array $queryData, array $options = array()) {
 		$defaults = array(

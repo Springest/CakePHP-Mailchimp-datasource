@@ -75,7 +75,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @param object $model
 	 * @param array $fields
 	 * @param array $values
-	 * @return boolean
+	 * @return bool
 	 */
 	public function create(Model $model, $fields = array(), $values = array()) {
 		$data = array_combine($fields, $values);
@@ -93,7 +93,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 * @param object $model
 	 * @param array $fields
 	 * @param array $values
-	 * @return boolean
+	 * @return bool
 	 */
 	public function update(Model $Model, $fields = array(), $values = array()) {
 		return $this->create($Model, $fields, $values);
@@ -104,7 +104,7 @@ class MailchimpSubscriberSource extends DataSource {
 	 *
 	 * @param object $model
 	 * @param string $id either email or id of the subscriber
-	 * @return boolean
+	 * @return bool
 	 */
 	public function delete(Model $model, $id = null) {
 		$response = $this->Mailchimp->listUnsubscribe($this->settings['defaultListId'], $model->id);

@@ -1,4 +1,5 @@
 <?php
+
 class NewsletterSubscriberFixture extends CakeTestFixture {
 
 	public $fields = array(

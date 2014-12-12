@@ -113,7 +113,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @param string $cid the id of the campaign to schedule
 	 * @param string $scheduleTime the time to schedule the campaign. For A/B Split "schedule" campaigns, the time for Group A - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @param string $scheduleTimeB optional -the time to schedule Group B of an A/B Split "schedule" campaign - in YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignSchedule(array $options) {
 		$defaults = array(
@@ -132,7 +132,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @param array $options
 	 * - $cid the id of the campaign to unschedule
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignUnschedule(array $options = array()) {
 		$defaults = array(
@@ -148,7 +148,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/pause.php
 	 *
 	 * @param string $cid the id of the campaign to pause
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignPause(array $options = array()) {
 		$defaults = array(
@@ -164,7 +164,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/resume.php
 	 *
 	 * @param string $cid the id of the campaign to pause
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignResume(array $options = array()) {
 		$defaults = array(
@@ -181,7 +181,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/send.php
 	 *
 	 * @param string $cid the id of the campaign to send
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignSend(array $options = array()) {
 		$defaults = array(
@@ -197,7 +197,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @param array $testEmails an array of email address to receive the test message
 	 * @param string $sendType optional by default (null) both formats are sent - "html" or "text" send just that format
 	 * @param string $cid the id of the campaign to test
-	 * @return boolean true on success
+	 * @return bool true on success
 	 */
 	public function campaignSendTest(array $options = array()) {
 		$defaults = array(
@@ -214,7 +214,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @param string $listId the list to test segmentation on - get lists using lists()
 	 * @param array $options with 2 keys:
-	 * @return integer total The total number of subscribers matching your segmentation options
+	 * @return int total The total number of subscribers matching your segmentation options
 	 */
 	public function campaignSegmentTest(array $campaignOptions, array $options = array()) {
 		$defaults = array(
@@ -265,7 +265,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * - $cid the Campaign Id to update
 	 * - string $name the parameter name ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's name (subject, from_email, etc.). Additional parameters will be that option name  (content, segment_opts). "type_opts" will be the name of the type - rss, auto, trans, etc.
 	 * - mixed $value an appropriate value for the parameter ( see campaignCreate() ). For items in the <strong>options</strong> array, this will be that parameter's value. For additional parameters, this is the same value passed to them.
-	 * @return boolean true if the update succeeds, otherwise an error will be thrown
+	 * @return bool true if the update succeeds, otherwise an error will be thrown
 	 */
 	public function campaignUpdate(array $options) {
 		$defaults = array(
@@ -297,7 +297,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/delete.php
 	 *
 	 * @param string $cid the Campaign Id to delete
-	 * @return boolean true if the delete succeeds, otherwise an error will be thrown
+	 * @return bool true if the delete succeeds, otherwise an error will be thrown
 	 */
 	public function campaignDelete(array $options = array()) {
 		$defaults = array(
@@ -415,8 +415,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 *
 	 * @param string $cid the campaign id to pull members for (can be gathered using campaigns())
 	 * @param string $status optional the status to pull - one of 'sent', 'hard' (bounce), or 'soft' (bounce). By default, all records are returned
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data (page 0)
+	 * @param int $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array a total of all matching emails and the specific emails for this page
 	 * @returnf int total   the total number of members for the campaign and status
 	 * @returnf array data  the full campaign member records
@@ -436,8 +436,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/reports/unsubscribes.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
+	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param int $limit optional for large data sets, the number of results to return - defaults to 1000, upper limit set at 15000
 	 * @return array email addresses that unsubscribed from this campaign along with reasons, if given
 	 * @return array a total of all unsubscribed emails and the specific emails for this page
 	 * @returnf int total   the total number of unsubscribes for the campaign
@@ -458,8 +458,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/reports/abuse.php
 	 *
 	 * @param string $cid the campaign id to pull abuse reports for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
+	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param int $limit optional for large data sets, the number of results to return - defaults to 500, upper limit set at 1000
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return array reports the abuse reports for this campaign
 	 * @returnf string date date/time the abuse report was received and processed
@@ -591,8 +591,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/reports/bounce-messages.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 25, upper limit set at 50
+	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param int $limit optional for large data sets, the number of results to return - defaults to 25, upper limit set at 50
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD format in <strong>GMT</strong> (we only store the date, not the time)
 	 * @return array bounces the full bounce messages for this campaign
 	 * @returnf int total that total number of bounce messages for the campaign
@@ -613,8 +613,8 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/reports/ecomm-orders.php
 	 *
 	 * @param string $cid the campaign id to pull bounces for (can be gathered using campaigns())
-	 * @param integer $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
-	 * @param integer $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 500
+	 * @param int $start optional for large data sets, the page number to start at - defaults to 1st page of data  (page 0)
+	 * @param int $limit optional for large data sets, the number of results to return - defaults to 100, upper limit set at 500
 	 * @param string $since optional pull only messages since this time - use YYYY-MM-DD HH:II:SS format in <strong>GMT</strong>
 	 * @return array the total matching orders and the specific orders for the requested page
 	 * @returnf int total the total matching orders
@@ -657,7 +657,7 @@ class MailchimpCampaign extends MailchimpAppModel {
 	 * @see http://apidocs.mailchimp.com/api/2.0/campaigns/content.php
 	 *
 	 * @param string $cid the campaign id to get content for (can be gathered using campaigns())
-	 * @param boolean   $forArchive optional controls whether we return the Archive version (true) or the Raw version (false), defaults to true
+	 * @param bool   $forArchive optional controls whether we return the Archive version (true) or the Raw version (false), defaults to true
 	 * @return struct Struct containing all content for the campaign (see Returned Fields for details
 	 * @returnf string html The HTML content used for the campgain with merge tags intact
 	 * @returnf string text The Text content used for the campgain with merge tags intact

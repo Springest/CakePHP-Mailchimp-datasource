@@ -34,7 +34,6 @@ class MandrillTransportTest extends CakeTestCase {
 
 		$email = new TestCakeEmail();
 		$this->MandrillTransport->send($email);
-
 	}
 
 	/**

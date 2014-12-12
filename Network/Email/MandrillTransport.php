@@ -63,7 +63,7 @@ class MandrillTransport extends AbstractTransport {
 			throw new InternalErrorException('No API key');
 		}
 		if (empty($this->_config['uri'])) {
-			$this->_config['uri'] = self::API_URL;
+			$this->_config['uri'] = static::API_URL;
 		}
 
 		$include = array(
