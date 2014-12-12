@@ -9,7 +9,7 @@ App::uses('DataSource', 'Model/Datasource');
  *
  * @see http://apidocs.mailchimp.com/api/2.0/#api-endpoints
  *
- * //TODO: make it 2.0 API compatible
+ * //TODO: make it further 2.0 API compatible
  *
  * Uses the $_schema in the model to supply custom values.
  * The names must coincide with the values you created in mailchimp
