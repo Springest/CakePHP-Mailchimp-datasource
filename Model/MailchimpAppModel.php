@@ -47,7 +47,18 @@ class MailchimpAppModel extends AppModel {
 			return $this->response;
 		}
 		if ($this->settings['exceptions']) {
-			throw new MailchimpException($this->getError());
+			$errorMsg = "Unknown error";
+			$errorCode = null;
+			$errorName = null;
+
+			if( isset($this->response['error']) )
+				$errorMsg = $this->response['error'];
+			if( isset($this->response['code']) )
+				$errorCode = $this->response['code'];
+			if( isset($this->response['name']) )
+				$errorName = $this->response['name'];
+
+			throw new MailchimpException($errorMsg, $errorCode, $errorName);
 		}
 		return false;
 	}
@@ -67,4 +78,11 @@ class MailchimpAppModel extends AppModel {
 }
 
 class MailchimpException extends CakeException {
+	public $mailchimpErrorCode;
+	public $mailchimpErrorName;
+	public function __construct($message, $mailchimpErrorCode = null, $mailchimpErrorName = null){
+		parent::__construct($message);
+		$this->mailchimpErrorCode = $mailchimpErrorCode;
+		$this->mailchimpErrorName = $mailchimpErrorName;
+	}
 }
