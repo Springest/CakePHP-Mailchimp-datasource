@@ -57,7 +57,7 @@ public $mailchimp = array(
 When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`,
 or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
 
-[1]: http://devblog.springest.com/mailchimp-datasource-cakephp
+[1]: http://devblog.springest.com/mailchimp-datasource-for-cakephp/
 
 ## Debugging
 
