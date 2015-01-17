@@ -10,7 +10,12 @@ Please check [the original blogpost][1] on our devblog for more background infor
 
 It uses the current API version 2.0 from Mailchimp.
 
-## Setup
+[1]: http://devblog.springest.com/mailchimp-datasource-for-cakephp/
+
+## Installation and Docs
+
+See [Docs](/docs) for details.
+
 
 Install the plugin into the `APP/Plugin` folder, ideally via composer.
 
@@ -41,23 +46,6 @@ $this->MailchimpCampaign = ClassRegistry::init('Mailchimp.MailchimpCampaign');
 ```
 Either use the available wrapper functionality or directly invoke `call()` on the models;
 
-### Usage of Subscriber datasource
-
-Warning: For the subscriptions there is also a datasource approach available.
-This is not yet fully tested/working for API 2.0, though.
-
-Add the `$mailchimp` datasource to `APP/Config/database.php`
-```php
-public $mailchimp = array(
-	'datasource' => 'Mailchimp.MailchimpSubscriberSource',
-	'apikey' => 'YOUR_API_KEY', // Optional, I prefer using Configure
-	'defaultListId' => 'YOUR_LIST_ID', // Optional, I prefer using Configure
-);
-```
-When you've set the datasource up correctly, you will now be able to do stuff like `$this->MailchimpSubscriber->save($this->request->data)`,
-or call other regular Model methods (like `Model::find`) from any controller that uses the `MailchimpSubscriber` model.
-
-[1]: http://devblog.springest.com/mailchimp-datasource-for-cakephp/
 
 ## Debugging
 

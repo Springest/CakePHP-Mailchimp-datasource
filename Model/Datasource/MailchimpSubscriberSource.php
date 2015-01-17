@@ -9,7 +9,7 @@ App::uses('DataSource', 'Model/Datasource');
  *
  * @see http://apidocs.mailchimp.com/api/2.0/#api-endpoints
  *
- * //TODO: make it further 2.0 API compatible
+ * //TODO: make it further 2.0 API compatible. Currently this file is not used.
  *
  * Uses the $_schema in the model to supply custom values.
  * The names must coincide with the values you created in mailchimp
@@ -60,7 +60,7 @@ class MailchimpSubscriberSource extends DataSource {
 	/**
 	 * Find a subscriber
 	 *
-	 * @param object $model
+	 * @param Model $model
 	 * @param array $queryData
 	 * @return array
 	 */
@@ -72,7 +72,7 @@ class MailchimpSubscriberSource extends DataSource {
 	/**
 	 * Add a subscriber to the list
 	 *
-	 * @param object $model
+	 * @param Model $model
 	 * @param array $fields
 	 * @param array $values
 	 * @return bool
@@ -90,19 +90,20 @@ class MailchimpSubscriberSource extends DataSource {
 	 * Updates a subscriber on the list
 	 * //TODO: test
 	 *
-	 * @param object $model
-	 * @param array $fields
-	 * @param array $values
+	 * @param Model $model
+	 * @param array|null $fields
+	 * @param array|null $values
+	 * @param array|null $conditions
 	 * @return bool
 	 */
-	public function update(Model $Model, $fields = array(), $values = array()) {
+	public function update(Model $Model, $fields = null, $values = null, $conditions = null) {
 		return $this->create($Model, $fields, $values);
 	}
 
 	/**
 	 * Delete a subscriber from the list
 	 *
-	 * @param object $model
+	 * @param Model $model
 	 * @param string $id either email or id of the subscriber
 	 * @return bool
 	 */

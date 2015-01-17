@@ -12,6 +12,8 @@ class MailchimpSubscriberSourceTest extends MyCakeTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		$this->skipIf(true, 'Not used right now');
+
 		$defaults = array(
 			'apiKey' => '',
 			'defaultListId' => '',
