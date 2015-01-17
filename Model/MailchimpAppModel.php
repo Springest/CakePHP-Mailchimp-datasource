@@ -51,13 +51,15 @@ class MailchimpAppModel extends AppModel {
 			$errorCode = null;
 			$errorName = null;
 
-			if( isset($this->response['error']) )
+			if (isset($this->response['error'])) {
 				$errorMsg = $this->response['error'];
-			if( isset($this->response['code']) )
+			}
+			if (isset($this->response['code'])) {
 				$errorCode = $this->response['code'];
-			if( isset($this->response['name']) )
+			}
+			if (isset($this->response['name'])) {
 				$errorName = $this->response['name'];
-
+			}
 			throw new MailchimpException($errorMsg, $errorCode, $errorName);
 		}
 		return false;
