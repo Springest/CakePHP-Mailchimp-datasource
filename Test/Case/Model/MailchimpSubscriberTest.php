@@ -7,11 +7,17 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 
 	public $MailchimpSubscriber;
 
+	public $time;
+
 	public function setUp() {
 		parent::setUp();
 		$this->skipIf(!Configure::read('Mailchimp.apiKey'), 'No API key');
 
 		$this->MailchimpSubscriber = new MailchimpSubscriber();
+
+		if (!isset($this->time)) {
+			$this->time = time();
+		}
 	}
 
 	/**
@@ -30,9 +36,10 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBatchSubscribe() {
-		$emails = array('test@markscherer.de', 'another@markscherer.de');
+		$emails = array('test' . $this->time . '@markscherer.de', 'another' . $this->time . '@markscherer.de');
 		$options = array('doubleOptin' => false, 'updateExisting' => true);
 		$res = $this->MailchimpSubscriber->batchSubscribe($emails, $options);
+		//debug($res);
 		$this->assertSame(2, $res['success_count']);
 		$this->assertSame(0, $res['error_count']);
 	}
@@ -43,8 +50,10 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBatchUnubscribe() {
-		$emails = array('test@markscherer.de', 'another@markscherer.de');
+		sleep(2);
+		$emails = array('test' . $this->time . '@markscherer.de', 'another' . $this->time . '@markscherer.de');
 		$res = $this->MailchimpSubscriber->batchUnsubscribe($emails);
+
 		$this->assertSame(2, $res['success_count']);
 		$this->assertSame(0, $res['error_count']);
 	}
@@ -55,7 +64,12 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBasicSubscriptionInvalid() {
+		$args = array(
+			'fii' => 'bar'
+		);
+
 		$res = $this->MailchimpSubscriber->subscribe(array('email' => ''));
+		debug($res);
 		$this->assertFalse($res);
 		$this->assertEquals('ValidationError', $this->MailchimpSubscriber->response['name']);
 	}

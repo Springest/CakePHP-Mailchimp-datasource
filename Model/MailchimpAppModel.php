@@ -1,5 +1,6 @@
 <?php
 App::uses('AppModel', 'Model');
+App::uses('MailchimpLib', 'Mailchimp.Lib');
 
 class MailchimpAppModel extends AppModel {
 
@@ -28,8 +29,7 @@ class MailchimpAppModel extends AppModel {
 
 		$this->settings = array_merge($this->_defaults, (array)Configure::read('Mailchimp'));
 
-		App::import('Vendor', 'Mailchimp.MailChimp/MailChimp');
-		$this->Mailchimp = new \Drewm\MailChimp(Configure::read('Mailchimp.apiKey'));
+		$this->Mailchimp = new MailchimpLib();
 	}
 
 	/**

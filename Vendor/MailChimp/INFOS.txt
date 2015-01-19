@@ -1,1 +1,0 @@
-https://github.com/drewm/mailchimp-api/blob/master/src/Drewm/MailChimp.php
