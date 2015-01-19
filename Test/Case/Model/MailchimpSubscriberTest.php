@@ -36,10 +36,10 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBatchSubscribe() {
-		$emails = array('test' . $this->time . '@markscherer.de', 'another' . $this->time . '@markscherer.de');
+		$emails = array('test' . $this->time . '@myexample.org', 'another' . $this->time . '@myexample.org');
 		$options = array('doubleOptin' => false, 'updateExisting' => true);
 		$res = $this->MailchimpSubscriber->batchSubscribe($emails, $options);
-		//debug($res);
+		debug($res);
 		$this->assertSame(2, $res['success_count']);
 		$this->assertSame(0, $res['error_count']);
 	}
@@ -50,10 +50,10 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBatchUnubscribe() {
-		sleep(2);
-		$emails = array('test' . $this->time . '@markscherer.de', 'another' . $this->time . '@markscherer.de');
+		sleep(5);
+		$emails = array('test' . $this->time . '@myexample.org', 'another' . $this->time . '@myexample.org');
 		$res = $this->MailchimpSubscriber->batchUnsubscribe($emails);
-
+		debug($res);
 		$this->assertSame(2, $res['success_count']);
 		$this->assertSame(0, $res['error_count']);
 	}
@@ -69,7 +69,6 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 		);
 
 		$res = $this->MailchimpSubscriber->subscribe(array('email' => ''));
-		debug($res);
 		$this->assertFalse($res);
 		$this->assertEquals('ValidationError', $this->MailchimpSubscriber->response['name']);
 	}
@@ -92,10 +91,10 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 */
 	public function testBasicSubscription() {
 		$res = $this->MailchimpSubscriber->subscribe(array(
-			'email' => 'kontakt@markscherer.de'),
+			'email' => 'kontakt@myexample.org'),
 		array(
 			'doubleOptin' => false));
-		$this->assertEquals('kontakt@markscherer.de', $res['email']);
+		$this->assertEquals('kontakt@myexample.org', $res['email']);
 	}
 
 	/**
@@ -104,7 +103,7 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testBasicUnsubscription() {
-		$res = $this->MailchimpSubscriber->unsubscribe(array('email' => 'kontakt@markscherer.de'));
+		$res = $this->MailchimpSubscriber->unsubscribe(array('email' => 'kontakt@myexample.org'));
 		$this->assertSame(array('complete' => true), $res);
 	}
 
