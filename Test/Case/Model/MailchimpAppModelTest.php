@@ -10,6 +10,12 @@ class MailchimpAppModelTest extends MyCakeTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		if ($this->isDebug()) {
+			$this->skipIf(!Configure::read('Mailchimp.apiKey'), 'No API key');
+		} else {
+			Configure::write('Mailchimp.apiKey', 'foo-bar');
+		}
+
 		$this->MailchimpAppModel = new MailchimpAppModel();
 	}
 
