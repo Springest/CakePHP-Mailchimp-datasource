@@ -9,7 +9,19 @@ class MailchimpTest extends MyCakeTestCase {
 
 	public function setUp() {
 		parent::setUp();
+
+		if ($this->isDebug()) {
+			$this->skipIf(!Configure::read('Mailchimp.apiKey'), 'No API key');
+		} else {
+			Configure::write('Mailchimp.apiKey', 'foo-bar');
+		}
+
 		$this->Mailchimp = new Mailchimp();
+
+		if (!$this->isDebug()) {
+			$this->Mailchimp->Mailchimp = $this->getMock('MailchimpLib', ['_get']);
+			$this->mockPath = CakePlugin::path('Mailchimp') . 'Test' . DS . 'test_files' . DS . 'mailchimp' . DS;
+		}
 	}
 
 	public function testObject() {
@@ -23,6 +35,12 @@ class MailchimpTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testPing() {
+		if (!$this->isDebug()) {
+			$this->Mailchimp->Mailchimp->expects($this->once())
+			->method('_get')
+			->will($this->returnValue(file_get_contents($this->mockPath . 'helper_ping.json')));
+		}
+
 		$res = $this->Mailchimp->ping();
 		$this->assertEquals(array('msg' => 'Everything\'s Chimpy!'), $res);
 	}
@@ -33,6 +51,12 @@ class MailchimpTest extends MyCakeTestCase {
 	 * @return void
 	 */
 	public function testInlineCss() {
+		if (!$this->isDebug()) {
+			$this->Mailchimp->Mailchimp->expects($this->once())
+			->method('_get')
+			->will($this->returnValue(file_get_contents($this->mockPath . 'helper_inline_css.json')));
+		}
+
 		$html = <<<HTML
 <style>
 div.x {
@@ -59,6 +83,12 @@ End of block.'
 	 * @return void
 	 */
 	public function testGenerateText() {
+		if (!$this->isDebug()) {
+			$this->Mailchimp->Mailchimp->expects($this->once())
+			->method('_get')
+			->will($this->returnValue(file_get_contents($this->mockPath . 'helper_generate_text.json')));
+		}
+
 		$html = <<<HTML
 <h1>Header</h1>
 <div class="x">Some bold text</div>

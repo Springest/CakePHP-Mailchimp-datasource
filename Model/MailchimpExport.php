@@ -16,7 +16,7 @@ class MailchimpExport extends MailchimpAppModel {
 	 * @return array Result
 	 */
 	public function exportMembers($params = array()) {
-		return $this->_get('list', $params);
+		return $this->_call('list', $params);
 	}
 
 	/**
@@ -31,7 +31,7 @@ class MailchimpExport extends MailchimpAppModel {
 	 */
 	public function exportActivity($params = array()) {
 		$params['id'] = Configure::read('Mailchimp.defaultCampaignId');
-		return $this->_get('campaignSubscriberActivity', $params);
+		return $this->_call('campaignSubscriberActivity', $params);
 	}
 
 	/**
@@ -42,7 +42,7 @@ class MailchimpExport extends MailchimpAppModel {
 	 * @return array Result
 	 * @throws CakeException
 	 */
-	protected function _get($type, $params) {
+	protected function _call($type, $params) {
 		$url = 'http://:dc.api.mailchimp.com/export/1.0/';
 		$apiKey = Configure::read('Mailchimp.apiKey');
 		$dc = substr($apiKey, strpos($apiKey, '-') + 1);
@@ -51,11 +51,10 @@ class MailchimpExport extends MailchimpAppModel {
 		$params += array('apikey' => $apiKey, 'id' => Configure::read('Mailchimp.defaultListId'));
 		$url .= $type . '/';
 
-		$Socket = new HttpSocket();
-		$response = $Socket->get($url, $params);
-		if ($response->body) {
+		$response = $this->_get($url, $params);
+		if ($response) {
 			$result = array();
-			$lines = explode("\n", trim($response->body));
+			$lines = explode("\n", trim($response));
 			foreach ($lines as $line) {
 				$result[] = json_decode($line, true);
 			}
@@ -65,6 +64,21 @@ class MailchimpExport extends MailchimpAppModel {
 			return $result;
 		}
 		return array();
+	}
+
+	/**
+	 * _get()
+	 *
+	 * @param mixed $url
+	 * @param mixed $params
+	 * @return string
+	 */
+	protected function _get($url, $params) {
+		$Socket = new HttpSocket();
+		$response = $Socket->get($url, $params);
+		//$file = TMP . Inflector::slug($url) . '.json';
+		//file_put_contents($file, $response->body);
+		return isset($response->body) ? $response->body : '';
 	}
 
 }

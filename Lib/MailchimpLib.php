@@ -71,8 +71,6 @@ class MailchimpLib {
 			'ssl_cafile' => CAKE . 'Config' . DS . 'cacert.pem',
 		));
 		$result = $Socket->post($url, $args);
-		$file = TMP . Inflector::slug($url) . '_' . rand(1, 10000);
-		file_put_contents($file, $result->body);
 		return $result->body;
 	}
 

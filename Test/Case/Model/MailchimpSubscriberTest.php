@@ -13,6 +13,8 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 		parent::setUp();
 		if ($this->isDebug()) {
 			$this->skipIf(!Configure::read('Mailchimp.apiKey'), 'No API key');
+		} else {
+			Configure::write('Mailchimp.apiKey', 'foo-bar');
 		}
 
 		$this->MailchimpSubscriber = new MailchimpSubscriber();
