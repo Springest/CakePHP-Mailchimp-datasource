@@ -74,7 +74,7 @@ HTML;
 <div class="x" style="font-weight: bold;">Some bold text</div>
 End of block.'
 		);
-		$this->assertEquals($expected, $res);
+		$this->assertTextEquals($expected, $res);
 	}
 
 	/**
