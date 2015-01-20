@@ -18,7 +18,7 @@ class MailchimpExportTest extends MyCakeTestCase {
 		$this->MailchimpExport = new MailchimpExport();
 
 		if (!$this->isDebug()) {
-			$this->MailchimpExport = $this->getMock('MailchimpExport', ['_get']);
+			$this->MailchimpExport = $this->getMock('MailchimpExport', array('_get'));
 			$this->mockPath = CakePlugin::path('Mailchimp') . 'Test' . DS . 'test_files' . DS . 'mailchimp' . DS;
 		}
 	}

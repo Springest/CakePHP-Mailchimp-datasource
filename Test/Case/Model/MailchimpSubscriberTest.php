@@ -20,7 +20,7 @@ class MailchimpSubscriberTest extends MyCakeTestCase {
 		$this->MailchimpSubscriber = new MailchimpSubscriber();
 
 		if (!$this->isDebug()) {
-			$this->MailchimpSubscriber->Mailchimp = $this->getMock('MailchimpLib', ['_get']);
+			$this->MailchimpSubscriber->Mailchimp = $this->getMock('MailchimpLib', array('_get'));
 			$this->mockPath = CakePlugin::path('Mailchimp') . 'Test' . DS . 'test_files' . DS . 'mailchimp' . DS;
 			return;
 		}
