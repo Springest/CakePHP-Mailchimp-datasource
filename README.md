@@ -47,21 +47,6 @@ $this->MailchimpCampaign = ClassRegistry::init('Mailchimp.MailchimpCampaign');
 Either use the available wrapper functionality or directly invoke `call()` on the models;
 
 
-## Debugging
-
-Unfortunately, the 2.0 vendor class from Mailchimp does not through exceptions by itself. So if your methods return false and you need to know
-the error message/code you will have to use the following:
-```php
-debug($this->MailchimpSubscriber->response);
-```
-with `$this->MailchimpSubscriber` being your model.
-
-You can, however, make the plugin throw exceptions using
-```php
-	Configure::write('Mailchimp.exceptions', true);
-```
-This will then throw a `MailchimpException` you can catch, log away and continue in your code.
-
 ## Dependencies
 
 Possibly my Tools plugin for the admin backend (optional)

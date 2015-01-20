@@ -13,6 +13,10 @@ class MandrillLib extends Mandrill {
 	public function __construct($apiKey = null) {
 		$apiKey = Configure::read('Mandrill.apiKey');
 		parent::__construct($apiKey);
+
+		//TODO: optionally allow ssl here
+		//curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 0);
+		//curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0);
 	}
 
 	/**

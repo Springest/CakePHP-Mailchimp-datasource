@@ -77,3 +77,28 @@ $options = array('doubleOptin' => true, 'updateExisting' => false);
 $response = $MailchimpSubscriber->subscribe($data, $options);
 // Act accordingly
 ```
+
+
+## Debugging
+
+Unfortunately, the 2.0 vendor class from Mailchimp does not through exceptions by itself. So if your methods return false and you need to know
+the error message/code you will have to use the following:
+```php
+debug($this->MailchimpSubscriber->response);
+```
+with `$this->MailchimpSubscriber` being your model.
+
+You can, however, make the plugin throw exceptions using
+```php
+	Configure::write('Mailchimp.exceptions', true);
+```
+This will then throw a `MailchimpException` you can catch, log away and continue in your code.
+
+## Testing
+By default all tests use mocks. This is useful to prevent real API connections for large scale testing as
+in travis for example.
+But once in a while you might want to manually asserr that the mocks still represent the actual API responses.
+For that the test cases have been adjusted to allow such a non-mocked test-run.
+
+Use `&debug=1` via WebTestRunner or `-v` via CLI to have real life connections. Note that you must
+have configured it using a valid API key then.

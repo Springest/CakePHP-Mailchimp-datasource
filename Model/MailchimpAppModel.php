@@ -4,7 +4,7 @@ App::uses('MailchimpLib', 'Mailchimp.Lib');
 
 class MailchimpAppModel extends AppModel {
 
-	public $useDbConfig = 'mailchimp';
+	//public $useDbConfig = 'mailchimp';
 
 	public $useTable = false;
 
@@ -80,11 +80,15 @@ class MailchimpAppModel extends AppModel {
 }
 
 class MailchimpException extends CakeException {
+
 	public $mailchimpErrorCode;
+
 	public $mailchimpErrorName;
-	public function __construct($message, $mailchimpErrorCode = null, $mailchimpErrorName = null){
-		parent::__construct($message);
+
+	public function __construct($message, $mailchimpErrorCode = null, $mailchimpErrorName = null) {
 		$this->mailchimpErrorCode = $mailchimpErrorCode;
 		$this->mailchimpErrorName = $mailchimpErrorName;
+		parent::__construct($message);
 	}
+
 }
