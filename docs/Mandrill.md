@@ -12,6 +12,13 @@ $config = array(
 	)
 );
 ```
+
+Don't forget to include that configs file in your `bootstrap.php`:
+```php
+// When you use configs.php
+Configure::load('configs');
+```
+
 You can also overwrite it from anywhere:
 ```php
 Configure::write('Mandrill.apiKey', 'rQLMYhItRJoKhtr8rs1uig');

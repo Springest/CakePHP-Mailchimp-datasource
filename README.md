@@ -5,9 +5,10 @@
 [![Total Downloads](https://poser.pugx.org/dereuromark/cakephp-mailchimp/d/total.png)](https://packagist.org/packages/dereuromark/cakephp-mailchimp)
 [![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
-With this datasource you can easily add users to your Mailchimp newsletter. It works with CakePHP 2.x.
+With this datasource you can easily add users to your Mailchimp newsletter.
+It works with CakePHP 2.x and is tested against the latest version(s) of it.
 
-Please check [the original blogpost][1] on our devblog for more background information.
+Please check [the original blogpost][1] on the original author's devblog for more background information.
 
 It uses the current API version 2.0 from Mailchimp.
 
@@ -17,49 +18,6 @@ It uses the current API version 2.0 from Mailchimp.
 
 See [Docs](/docs) for details.
 
-
-Install the plugin into the `APP/Plugin` folder, ideally via composer.
-
-Make sure it is loaded - using `CakePlugin::loadAll()`, for example.
-
-Use the Configure class to set the API data (via `APP/Config/configs.php` etc):
-```php
-$config['Mailchimp'] = array(
-	'apiKey' => 'YOUR_API_KEY',
-	'defaultListId' => 'YOUR_LIST_ID',
-	'defaultCampaignId => 'YOUR_CAMPAIGN_ID'
-);
-```
-
-Don't forget to include that configs file in your `bootstrap.php`:
-
-	Configure::load('configs');
-
-## Usage
-
-Include the Model where you need it via
-```php
-$this->Mailchimp = ClassRegistry::init('Mailchimp.Mailchimp');
-
-$this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
-
-$this->MailchimpCampaign = ClassRegistry::init('Mailchimp.MailchimpCampaign');
-```
-Either use the available wrapper functionality or directly invoke `call()` on the models;
-
-
 ## Dependencies
 
 Possibly my Tools plugin for the admin backend (optional)
-
-
-## Mandrill
-This plugin now also contains some Mandrill API wrapper as well as MandrillTransport for sending it via CakeEmail.
-This requires
-```php
-	$config['Mandrill'] = array(
-		'apiKey' => 'YOUR_API_KEY',
-	);
-```
-## Disclaimer
-2013/2014: Upgraded Mailchimp API from 1.3 to 2.0

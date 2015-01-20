@@ -14,6 +14,13 @@ $config = array(
 	)
 );
 ```
+
+Don't forget to include that configs file in your `bootstrap.php`:
+```php
+// When you use configs.php
+Configure::load('configs');
+```
+
 You can also overwrite it from anywhere:
 ```php
 Configure::write('Mailchimp.defaultListId', '123');
@@ -25,7 +32,14 @@ to a test list.
 
 
 ## Usage
-Include any model you need via `ClassRegistry::init('Mailchimp.{ModelName}')`.
+Include any model you need via `ClassRegistry::init('Mailchimp.{ModelName}')`:
+```php
+$this->Mailchimp = ClassRegistry::init('Mailchimp.Mailchimp');
+
+$this->MailchimpSubscriber = ClassRegistry::init('Mailchimp.MailchimpSubscriber');
+
+$this->MailchimpCampaign = ClassRegistry::init('Mailchimp.MailchimpCampaign');
+```
 
 In case you want to manually query something, use
 ```
