@@ -5,14 +5,14 @@ Installing the Plugin is pretty much as with every other CakePHP Plugin.
 
 Put the files in `Plugin/Mailchimp`, using Packagist/Composer:
 ```
-composer require dereuromark/cakephp-mailchimp:dev-dev
+composer require dereuromark/cakephp-mailchimp:1.0.*
 ```
 
 which will add the following to your `composer.json` file:
 
 ```
 "require": {
-	"dereuromark/cakephp-mailchimp": "dev-dev"
+	"dereuromark/cakephp-mailchimp": "1.0.*"
 }
 ```
 
