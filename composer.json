@@ -20,6 +20,9 @@
 		"composer/installers" : "*",
 		"php" : ">=5.3"
 	},
+	"require-dev": {
+		"dereuromark/cakephp-tools": "dev-master"
+	},
 	"support" : {
 		"source" : "https://github.com/dereuromark/cakephp-mailchimp"
 	},

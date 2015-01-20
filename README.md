@@ -1,8 +1,9 @@
 # CakePHP Plugin for Mailchimp
-
 [![Build Status](https://api.travis-ci.org/dereuromark/cakephp-mailchimp.png?branch=dev)](https://travis-ci.org/dereuromark/cakephp-mailchimp)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.3-8892BF.svg)](https://php.net/)
 [![License](https://poser.pugx.org/dereuromark/cakephp-mailchimp/license.png)](https://packagist.org/packages/dereuromark/cakephp-mailchimp)
 [![Total Downloads](https://poser.pugx.org/dereuromark/cakephp-mailchimp/d/total.png)](https://packagist.org/packages/dereuromark/cakephp-mailchimp)
+[![Coding Standards](https://img.shields.io/badge/cs-PSR--2--R-yellow.svg)](https://github.com/php-fig-rectified/fig-rectified-standards)
 
 With this datasource you can easily add users to your Mailchimp newsletter. It works with CakePHP 2.x.
 
