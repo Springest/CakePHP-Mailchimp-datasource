@@ -1,6 +1,7 @@
 <?php
 App::uses('MailchimpAppModel', 'Mailchimp.Model');
 App::uses('HttpSocket', 'Network/Http');
+App::uses('String', 'Utility');
 
 class MailchimpExport extends MailchimpAppModel {
 
