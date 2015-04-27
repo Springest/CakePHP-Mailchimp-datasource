@@ -43,7 +43,7 @@ class MailchimpAppModel extends AppModel {
 			$args[Inflector::underscore($key)] = $value;
 		}
 		$this->response = $this->Mailchimp->call($method, $args);
-		if (!isset($this->response['status'])) {
+		if (!isset($this->response['status']) || $this->response['status'] !== 'error') {
 			return $this->response;
 		}
 		if ($this->settings['exceptions']) {
