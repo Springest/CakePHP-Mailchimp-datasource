@@ -1,0 +1,32 @@
+{
+	"name" : "dereuromark/cakephp-mailchimp",
+	"description" : "A CakePHP plugin for MailChimp",
+	"type" : "cakephp-plugin",
+	"authors" : [{
+			"name" : "Mark Scherer",
+			"homepage" : "http://www.dereuromark.de"
+		}
+	],
+	"keywords" : [
+		"cakephp",
+		"plugin",
+		"mailchimp"
+	],
+	"homepage" : "https://github.com/dereuromark/cakephp-mailchimp",
+	"license" : [
+		"MIT"
+	],
+	"require" : {
+		"composer/installers" : "*",
+		"php" : ">=5.3"
+	},
+	"require-dev": {
+		"dereuromark/cakephp-tools": "0.*"
+	},
+	"support" : {
+		"source" : "https://github.com/dereuromark/cakephp-mailchimp"
+	},
+	"extra" : {
+		"installer-name" : "Mailchimp"
+	}
+}

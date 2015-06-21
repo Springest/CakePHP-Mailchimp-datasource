@@ -1,0 +1,2 @@
+https://bitbucket.org/mailchimp/mandrill-api-php
+With a few minor fixes
